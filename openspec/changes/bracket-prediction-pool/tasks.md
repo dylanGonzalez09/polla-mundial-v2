@@ -32,7 +32,7 @@
 ## 5. Lógica de dominio (pura, reutilizable)
 
 - [x] 5.1 Implementar `lib/domain/rounds.ts` (orden/etiquetas de rondas) y `lib/domain/bracket.ts` (cascada por feeder + `source_type`: `winner` usa el equipo que avanza del feeder, `loser` usa el otro participante; puebla el 3er lugar con los perdedores de semis)
-- [x] 5.2 Implementar `lib/domain/scoring.ts` `scoreMatch(pick, official)` posicional sobre marcador a 90' (independiente de equipos): exacto = 3, solo resultado (signo home-away) = 1, incorrecto = 0 (no acumulable, máx. 3); no usa `advancing_team_id`
+- [x] 5.2 Implementar `lib/domain/scoring.ts` `scoreMatch(pick, official, advancingCorrect)` con la matriz de producto: ganador+marcador exacto = 4, solo ganador = 1, solo marcador exacto = 2, ninguno = 0
 - [x] 5.3 Implementar `lib/domain/phase.ts` `effectiveStatus(opens_at, closes_at, override, now)` reflejando la función SQL (para UI/preview)
 - [x] 5.4 Implementar helpers de validación para completitud del envío inicial, gate de fecha límite inicial, completitud por fase (todos los marcadores de la ronda) y bloqueo por confirmación/estado efectivo/submission de fase — compartidos por UI y actions
 
@@ -83,6 +83,6 @@
 - [x] 12.4 Gate de fecha límite inicial: tras la `initial_deadline` (sin override) un usuario nuevo no puede crear predicción (cuadro solo-lectura); el override la reabre
 - [x] 12.5 Ventanas de fase: una ronda abre/cierra según la fecha/hora configurada; el override del admin fuerza abierto/cerrado y limpiarlo vuelve al modo por tiempo
 - [x] 12.6 Visibilidad: antes de confirmar el inicial, sin datos de pares; tras confirmar, ver equipos + 16avos de los pares; octavos de pares ocultos hasta que el observador envíe sus propios octavos; pares que no enviaron se muestran como "no enviado"
-- [x] 12.7 El admin desbloquea octavos → el usuario envía marcadores de octavos → el admin registra resultados a 90' → los puntos y el ranking se actualizan según las reglas posicionales (exacto=3, solo resultado=1, incorrecto=0), incluso con equipos pronosticados eliminados
+- [x] 12.7 El admin desbloquea octavos → el usuario envía marcadores de octavos → el admin registra resultados a 90' → los puntos y el ranking se actualizan según la matriz vigente (ganador+marcador=4, solo ganador=1, solo marcador=2, ninguno=0), incluso con cruces distintos a los pronosticados
 - [x] 12.8 Inmutabilidad por fase: tras enviar una ronda, intentar reeditar sus marcadores (UI y POST directo) es rechazado aunque la fase siga abierta
 - [x] 12.9 Chequeo responsive en viewport Android (PhaseTabs) y cuadro de escritorio; `pnpm lint` y `pnpm build` pasan

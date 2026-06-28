@@ -24,38 +24,57 @@ const STEPS: TourStep[] = [
   {
     eyebrow: "Bienvenido",
     title: "Así funciona la Polla Mundial",
-    body: "Vas a predecir el cuadro del torneo: qué equipo avanza en cada cruce y los marcadores de cada partido. Mientras más aciertes, más puntos sumas. Te muestro dónde está cada cosa en menos de un minuto.",
+    body: "Vas a predecir el cuadro completo del torneo: qué equipo avanza en cada cruce y el marcador de cada partido. Mientras más aciertes, más puntos sumas. En menos de un minuto te enseño a jugar paso a paso.",
   },
   {
     target: '[data-tour="nav-bracket"]',
-    eyebrow: "Pestaña · Bracket",
-    title: "Aquí armas tu cuadro",
-    body: "En Bracket eliges el equipo que avanza en todas las rondas (de 16avos hasta la final) y cargas los marcadores de 16avos. Es el corazón del juego.",
+    eyebrow: "Las 3 pestañas",
+    title: "Bracket, Jugadores y Ranking",
+    body: "Arriba tienes tres pestañas. En Bracket juegas (armas tu cuadro y cargas marcadores), en Jugadores ves los pronósticos de los demás, y en Ranking ves la tabla de posiciones. Empezamos por Bracket.",
+  },
+  {
+    eyebrow: "Bracket · Paso 1",
+    title: "Elige quién avanza",
+    body: "En cada partido toca el equipo que crees que pasa de ronda. El equipo que elijas se marca como ganador y aparece automáticamente en el siguiente cruce, así vas armando todo el cuadro hasta la final.",
+    highlights: [
+      "Debes elegir el equipo que avanza en TODAS las rondas, de 16avos a la final.",
+    ],
+  },
+  {
+    eyebrow: "Bracket · Paso 2",
+    title: "Carga los marcadores de 16avos",
+    body: "Debajo de cada partido hay dos casillas para escribir el marcador (por ejemplo 2 y 1). Para confirmar tu cuadro inicial tienes que llenar el marcador de los 16 partidos de 16avos. Los marcadores de las rondas siguientes se cargan después, fase por fase.",
   },
   {
     target: '[data-tour="confirm"]',
     eyebrow: "Bracket · Confirmar",
     title: "Confirma tu cuadro inicial",
-    body: "Cuando completes equipos y marcadores de 16avos, confirmas aquí una sola vez. Al confirmar, los equipos quedan fijos para siempre, así que revísalo bien antes.",
+    body: "Cuando tengas todos los equipos y los marcadores de 16avos, confirmas aquí una sola vez con el botón. Al confirmar, los equipos que elegiste quedan fijos para siempre, así que revísalo bien antes.",
     highlights: [
       "Solo puedes confirmar mientras la ventana inicial esté abierta.",
     ],
   },
   {
     target: '[data-tour="phases"]',
-    eyebrow: "Bracket · Fases",
-    title: "Marcadores por fase",
-    body: "Después de confirmar, cada fase (octavos, cuartos, etc.) la abre el administrador. Cuando esté abierta, cargas los marcadores arriba en cada partido y envías la fase desde aquí. Una fase enviada queda fija.",
+    eyebrow: "Bracket · Enviar fases",
+    title: "Cómo envías cada fase",
+    body: "Después de confirmar, el administrador va abriendo las fases (octavos, cuartos, etc.). Cuando una esté abierta, escribe los marcadores de esa ronda arriba y pulsa “Enviar” aquí. Cada fase enviada queda fija y recién ahí desbloqueas ver la de los demás.",
   },
   {
     eyebrow: "Puntaje",
     title: "Cómo se ganan los puntos",
-    body: "Cada partido se compara con el resultado oficial:",
+    body: "Cada partido suma según dos cosas: si acertaste el equipo que avanza en esa posición y si acertaste el marcador exacto. Que el cruce real haya sido distinto no te quita esos puntos si igual pegaste el ganador.",
     highlights: [
-      "3 puntos si aciertas el marcador exacto.",
-      "1 punto si aciertas solo el resultado (local, empate o visitante).",
-      "0 puntos si no coincide.",
+      "Ganador + marcador exacto = 4 puntos, aunque el cruce real no coincida.",
+      "Solo el ganador = 1 punto.",
+      "Solo el marcador exacto, sin acertar el ganador = 2 puntos.",
+      "Nada de eso = 0 puntos.",
     ],
+  },
+  {
+    eyebrow: "Puntaje · Ejemplo",
+    title: "Cuando falla el cruce",
+    body: "Si dijiste “Argentina vs Portugal, gana Argentina 2-1” pero en realidad fue “Argentina vs España 2-1”, el cruce que pronosticaste no se dio. Aun así, como acertaste que avanzaba Argentina y además el 2-1 exacto, sumas 4 puntos.",
   },
   {
     target: '[data-tour="nav-players"]',
@@ -94,7 +113,9 @@ function useTourSeen(storageKey: string) {
 }
 
 export function OnboardingTour({ userId }: { userId: string }) {
-  const storageKey = `polla-tour-seen:${userId}`;
+  // v2: tutorial ampliado (cómo jugar + nuevas reglas de puntaje). Subir la
+  // versión hace que el tour se vuelva a mostrar a quienes ya vieron el v1.
+  const storageKey = `polla-tour-seen:v2:${userId}`;
   const seen = useTourSeen(storageKey);
   const [dismissed, setDismissed] = useState(false);
   const open = !seen && !dismissed;

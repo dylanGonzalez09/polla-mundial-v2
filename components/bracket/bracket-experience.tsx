@@ -114,15 +114,42 @@ export function BracketExperience({
     () => new Map(phaseWindows.map((window) => [window.round, window])),
     [phaseWindows],
   );
+  // Ocupantes reales de cada cruce, derivados del avance oficial (mismo
+  // algoritmo del cuadro, pero alimentado con resultados oficiales en vez de
+  // los picks del usuario). Sirve para saber si el usuario acertó el cruce.
+  const officialResolvedById = useMemo(() => {
+    const officialPicks = officialResults.map((result) => ({
+      matchId: result.matchId,
+      predictedAdvancingTeamId: result.advancingTeamId,
+      homeScore: null,
+      awayScore: null,
+    }));
+    return new Map(
+      buildResolvedMatches(matches, teams, officialPicks).map((match) => [
+        match.id,
+        match,
+      ]),
+    );
+  }, [matches, teams, officialResults]);
+
   const officialMap = useMemo(
     () =>
       new Map(
-        officialResults.map((result) => [
-          result.matchId,
-          { homeScore: result.homeScore, awayScore: result.awayScore },
-        ]),
+        officialResults.map((result) => {
+          const resolved = officialResolvedById.get(result.matchId);
+          return [
+            result.matchId,
+            {
+              homeScore: result.homeScore,
+              awayScore: result.awayScore,
+              advancingTeamId: result.advancingTeamId,
+              realHomeTeamId: resolved?.homeTeam?.id ?? null,
+              realAwayTeamId: resolved?.awayTeam?.id ?? null,
+            },
+          ];
+        }),
       ),
-    [officialResults],
+    [officialResults, officialResolvedById],
   );
 
   const initialLockReason = getInitialLockReason(initialSettings, prediction);

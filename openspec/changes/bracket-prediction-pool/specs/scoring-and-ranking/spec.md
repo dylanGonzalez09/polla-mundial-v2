@@ -1,29 +1,37 @@
 ## ADDED Requirements
 
 ### Requirement: Reglas de puntaje por partido
-El sistema DEBE (MUST) otorgar puntos por cada posición de partido comparando el marcador a 90 minutos pronosticado por el usuario contra el marcador oficial a 90 minutos de esa posición, independientemente de qué equipos ocupen realmente la posición (solo se consideran los 90', no penales). Las condiciones NO se acumulan, con un máximo de 3 puntos por partido:
+El sistema DEBE (MUST) otorgar puntos por cada posición de partido combinando dos dimensiones independientes contra el resultado oficial a 90 minutos (solo 90', no penales):
 
-- **3 puntos** si se acierta el marcador exacto a 90'.
-- **1 punto** si se acierta solo el resultado (local gana, empate, o visitante gana) según el marcador a 90', sin marcador exacto.
-- **0 puntos** si el resultado es incorrecto.
+- **Ganador**: el equipo que el usuario pronosticó como clasificado en esa posición coincide con el oficial, aunque el cruce real haya sido distinto.
+- **Marcador**: el marcador exacto a 90' pronosticado coincide con el oficial.
 
-Nota: el ganador a 90' es el equipo que avanza, por lo que "acertar el resultado" y "acertar el equipo que avanza" son la misma condición y no se cuentan por separado. El puntaje del marcador se otorga aunque los equipos pronosticados para esa posición hayan quedado eliminados en la realidad.
+La combinación NO es aditiva simple (hay un bono por acertar ambas):
 
-#### Scenario: Marcador exacto
-- **CUANDO** el marcador a 90' pronosticado para una posición es igual al marcador oficial a 90'
-- **ENTONCES** el sistema otorga 3 puntos por ese partido
+| Ganador | Marcador exacto | Puntos |
+|--------|-----------------|--------|
+| ✓ | ✓ | **4** |
+| ✓ | ✗ | **1** |
+| ✗ | ✓ | **2** |
+| ✗ | ✗ | **0** |
 
-#### Scenario: Resultado correcto pero marcador inexacto
-- **CUANDO** el marcador pronosticado no es exacto pero acierta el resultado a 90' (mismo lado ganador, o empate cuando el oficial es empate)
+Nota: como acertar el equipo de un cruce depende de qué equipos llegaron realmente (resultado oficial de las rondas previas), registrar un resultado oficial DEBE recalcular el puntaje de todos los partidos afectados, incluidos los de rondas posteriores. El marcador puntúa por posición aunque los equipos pronosticados para esa posición hayan quedado eliminados en la realidad (caso "solo marcador" = 2).
+
+#### Scenario: Ganador y marcador exacto
+- **CUANDO** el usuario acierta el equipo que avanza en esa posición y además el marcador exacto a 90', incluso si el cruce real fue distinto
+- **ENTONCES** el sistema otorga 4 puntos por ese partido
+
+#### Scenario: Solo el ganador
+- **CUANDO** el usuario acierta el equipo que avanza en esa posición, pero el marcador no es exacto
 - **ENTONCES** el sistema otorga 1 punto por ese partido
 
-#### Scenario: Resultado incorrecto
-- **CUANDO** el marcador pronosticado no acierta el resultado a 90'
-- **ENTONCES** el sistema otorga 0 puntos por ese partido
+#### Scenario: Solo el marcador
+- **CUANDO** el marcador exacto a 90' coincide con el oficial, pero el equipo que avanza pronosticado no coincide con el oficial
+- **ENTONCES** el sistema otorga 2 puntos por ese partido
 
-#### Scenario: Marcador puntúa con equipos eliminados
-- **CUANDO** los equipos que el usuario pronosticó para una posición de ronda posterior quedaron eliminados en la realidad, pero el marcador pronosticado a 90' coincide (exacto o solo resultado) con el oficial de esa posición
-- **ENTONCES** el sistema otorga los puntos del marcador (3 si exacto, 1 si solo resultado) por ese partido
+#### Scenario: Sin aciertos
+- **CUANDO** el usuario no acierta ni el ganador ni el marcador exacto
+- **ENTONCES** el sistema otorga 0 puntos por ese partido
 
 #### Scenario: Solo cuentan partidos puntuados
 - **CUANDO** un partido aún no tiene resultado oficial registrado

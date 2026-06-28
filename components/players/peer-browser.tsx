@@ -52,15 +52,39 @@ export function PeerBrowser({
     () => new Map(resolvedMatches.map((match) => [match.id, match])),
     [resolvedMatches],
   );
+  const officialResolvedById = useMemo(() => {
+    const officialPicks = officialResults.map((result) => ({
+      matchId: result.matchId,
+      predictedAdvancingTeamId: result.advancingTeamId,
+      homeScore: null,
+      awayScore: null,
+    }));
+    return new Map(
+      buildResolvedMatches(matches, teams, officialPicks).map((match) => [
+        match.id,
+        match,
+      ]),
+    );
+  }, [matches, teams, officialResults]);
+
   const officialMap = useMemo(
     () =>
       new Map(
-        officialResults.map((result) => [
-          result.matchId,
-          { homeScore: result.homeScore, awayScore: result.awayScore },
-        ]),
+        officialResults.map((result) => {
+          const resolved = officialResolvedById.get(result.matchId);
+          return [
+            result.matchId,
+            {
+              homeScore: result.homeScore,
+              awayScore: result.awayScore,
+              advancingTeamId: result.advancingTeamId,
+              realHomeTeamId: resolved?.homeTeam?.id ?? null,
+              realAwayTeamId: resolved?.awayTeam?.id ?? null,
+            },
+          ];
+        }),
       ),
-    [officialResults],
+    [officialResults, officialResolvedById],
   );
 
   const resolveTeams = (match: BracketMatchView) => {

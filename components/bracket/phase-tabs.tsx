@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { PredictionPick, RoundKey, Team } from "@/lib/domain/types";
 import type { BracketMatchView } from "@/lib/domain/types";
 import { ROUND_LABELS, ROUND_ORDER } from "@/lib/domain/rounds";
-import { MatchCard } from "@/components/bracket/match-card";
+import { MatchCard, type OfficialCell } from "@/components/bracket/match-card";
 
 type PhaseTabsProps = {
   matches: Record<RoundKey, BracketMatchView[]>;
@@ -19,7 +19,7 @@ type PhaseTabsProps = {
     value: number | null,
   ) => void;
   resolveTeams: (match: BracketMatchView) => { homeTeam: Team | null; awayTeam: Team | null };
-  officialResults?: Map<number, { homeScore: number | null; awayScore: number | null }>;
+  officialResults?: Map<number, OfficialCell>;
   readOnly?: boolean;
 };
 

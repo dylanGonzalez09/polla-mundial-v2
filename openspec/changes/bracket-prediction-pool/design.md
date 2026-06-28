@@ -46,7 +46,7 @@ Usamos `@supabase/supabase-js` + `@supabase/ssr` con tres factorías de cliente:
 - `tournament_matches`: estructura fija del cuadro. `id`, `code` (P73…P104), `round` (enum: `r32`,`r16`,`qf`,`sf`,`third`,`final`), `slot_order`, `match_date`. Cada slot (home/away) se alimenta de un partido feeder con un **tipo de fuente**: `home_source_match_id` + `home_source_type` (enum `winner`/`loser`), `away_source_match_id` + `away_source_type`; en r32 los slots referencian equipos conocidos (`home_team_id`/`away_team_id`, sin feeder). El **partido por el 3er lugar** se modela con ambos slots `source_type = loser` apuntando a las dos semis (los perdedores RU101/RU102), mientras la **final** usa `source_type = winner` de las semis. Esto reemplaza el `advances_to_*` previo (la relación inversa se deriva de los feeders + tipo).
 - `match_phase` (config por ronda): `round` (PK), `opens_at timestamptz null`, `closes_at timestamptz null`, `manual_override` (enum `open`/`closed`/null). El **estado efectivo** se deriva (ver D9). Seed: r32 con `opens_at` ya pasado (o override `open`), resto con `opens_at`/`closes_at` null (=`locked`).
 - `app_settings` (singleton, `id=1`): `initial_opens_at`, `initial_deadline` (timestamptz), `initial_override` (enum `open`/`closed`/null). Ventana del primer llenado.
-- `official_results`: `match_id` (PK→tournament_matches), `home_score`, `away_score` (marcador a 90', fuente de verdad para el puntaje), `advancing_team_id` (opcional, solo para mostrar la progresión oficial del cuadro; NO se usa en el puntaje; no se consideran penales), `updated_at`.
+- `official_results`: `match_id` (PK→tournament_matches), `home_score`, `away_score` (marcador a 90', fuente de verdad para el puntaje), `advancing_team_id` (equipo que oficialmente avanzó en esa posición; sí interviene en el puntaje junto al marcador; no se consideran penales), `updated_at`.
 - `predictions`: 1 por usuario. `id`, `user_id` (unique), `is_confirmed`, `confirmed_at`, `total_points`. `is_confirmed` representa el envío inicial (equipos de todas las rondas + marcadores de r32).
 - `prediction_picks`: 1 fila por (predicción, match). `prediction_id`, `match_id`, `predicted_advancing_team_id`, `home_score`, `away_score`, `points` (cacheado). Unique (`prediction_id`,`match_id`).
 - `prediction_phase_submissions`: registro explícito del envío de una ronda por usuario. `prediction_id`, `round`, `submitted_at`. Unique (`prediction_id`,`round`). Marca una fase como **enviada** (definitiva): habilita el gate de visibilidad de pares y bloquea futuras ediciones de esa ronda. La ronda r32 se considera enviada cuando `predictions.is_confirmed = true`.
@@ -66,14 +66,19 @@ Cascada de equipos para poblar slots (en `lib/domain/bracket.ts`): cada slot de 
 
 ### D5. Scoring centralizado y determinista
 
-Función pura `scoreMatch(pick, official)` en `lib/domain/scoring.ts` (reutilizada por UI preview y por el recálculo). El puntaje es **posicional sobre el marcador a 90'** (solo 90', no penales), independiente de qué equipos ocupen la posición — compara `(pick.home_score, pick.away_score)` contra `(official.home_score, official.away_score)`:
+Función pura `scoreMatch(pick, official, advancingCorrect)` en `lib/domain/scoring.ts` (reutilizada por UI preview y por el recálculo). El puntaje combina dos señales por posición de partido a 90' (solo 90', no penales):
 
-- `3` si el **marcador exacto** coincide.
-- `1` si solo coincide el **resultado** (signo de `home-away`: local gana / empate / visitante gana) sin marcador exacto.
-- `0` si el resultado no coincide.
-- No acumulable. Resumen: exacto = 3, solo resultado = 1, incorrecto = 0 (máx. 3).
+- **Ganador**: `predicted_advancing_team_id` coincide con `official.advancing_team_id`, aunque el cruce real haya sido distinto.
+- **Marcador exacto**: `(pick.home_score, pick.away_score)` coincide exactamente con `(official.home_score, official.away_score)`.
 
-Se elimina el componente separado por "equipo que avanza": como el ganador a 90' es el que avanza, sería redundante; además, esto permite que el marcador puntúe aunque los equipos pronosticados de la posición hayan quedado eliminados. `official.advancing_team_id` no interviene en el puntaje. El recálculo corre en una **RPC/función SQL** (`recompute_scores(match_id)`) disparada por la action de `official_results`, actualizando `prediction_picks.points` y `predictions.total_points` de forma transaccional; así el ranking es una simple lectura ordenada. Alternativa descartada: recomputar todo en JS por request (no escala, condiciones de carrera).
+Matriz:
+
+- `4` si acierta **ganador + marcador exacto**.
+- `1` si acierta **solo el ganador**.
+- `2` si acierta **solo el marcador exacto**.
+- `0` si no acierta ninguno.
+
+El cruce completo no aporta puntos extra; solo sirve para explicar por qué los equipos reales de esa posición pueden diferir de los que el usuario había llevado allí. Esto permite dos casos clave del producto: (1) acertar el ganador aunque solo uno de los dos equipos del cruce coincida, y (2) acertar el marcador exacto de la posición aunque ninguno de los dos equipos pronosticados haya llegado realmente. El recálculo corre en una **RPC/función SQL** (`recompute_scores(match_id)`) disparada por la action de `official_results`, actualizando `prediction_picks.points` y `predictions.total_points` de forma transaccional; así el ranking es una simple lectura ordenada. Alternativa descartada: recomputar todo en JS por request (no escala, condiciones de carrera).
 
 ### D6. Reglas de bloqueo
 
@@ -117,7 +122,7 @@ Mobile-first: en móvil se muestra **una ronda a la vez** mediante `PhaseTabs` (
 
 ## Risks / Trade-offs
 
-- **Cascada de equipos vs. realidad** → El puntaje es posicional sobre el marcador a 90' y NO depende de los equipos; un equipo predicho puede estar “eliminado” en la realidad y el marcador de esa posición igual puntúa (1 si acierta resultado / 3 si exacto). Documentarlo en UI para evitar confusión.
+- **Cascada de equipos vs. realidad** → El puntaje depende del equipo que avanza oficialmente en esa posición y del marcador exacto a 90'. Un usuario puede sumar aunque el cruce real no coincida, e incluso sumar `2` solo por marcador exacto si ninguno de sus equipos llegó realmente. Documentarlo en UI para evitar confusión.
 - **Convención de lado (home/away) en resultados oficiales** → como el scoring es posicional, el admin DEBE cargar el marcador oficial respetando el lado del feeder (home = slot alimentado por el feeder de menor `slot_order`); de lo contrario un marcador no-empate podría compararse con el lado invertido. Se documenta en la UI de admin y se mantiene consistente con el seed.
 - **Doble enforcement (RLS + action)** puede divergir → Centralizar reglas en `lib/domain/validation.ts` y reflejarlas en políticas; tests de la función de scoring y de bloqueo.
 - **Inmutabilidad** debe resistir POST directo a la action → toda action revalida `is_confirmed`/estado de fase server-side; no confiar en UI.

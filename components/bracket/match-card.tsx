@@ -7,7 +7,15 @@ import { ROUND_LABELS } from "@/lib/domain/rounds";
 import { scoreMatch } from "@/lib/domain/scoring";
 import type { BracketMatchView, PredictionPick, Team } from "@/lib/domain/types";
 
-type ScoreLite = { homeScore: number | null; awayScore: number | null };
+export type OfficialCell = {
+  homeScore: number | null;
+  awayScore: number | null;
+  /** Equipo que avanzó oficialmente en esta posición. */
+  advancingTeamId?: number | null;
+  /** Equipos que realmente ocuparon el cruce (derivados de resultados oficiales). */
+  realHomeTeamId?: number | null;
+  realAwayTeamId?: number | null;
+};
 
 type MatchCardProps = {
   match: BracketMatchView;
@@ -17,7 +25,7 @@ type MatchCardProps = {
   readOnly?: boolean;
   homeTeam: Team | null;
   awayTeam: Team | null;
-  officialResult?: ScoreLite | null;
+  officialResult?: OfficialCell | null;
   onPickWinner?: (teamId: number) => void;
   onChangeScore?: (side: "home" | "away", value: number | null) => void;
 };
@@ -44,11 +52,25 @@ export function MatchCard({
     officialResult != null &&
     officialResult.homeScore !== null &&
     officialResult.awayScore !== null;
+
+  // advancingCorrect: acertaste el equipo que avanza de esta posición
+  // (independiente de si el cruce es correcto).
+  const advancingCorrect =
+    hasOfficial &&
+    officialResult.advancingTeamId != null &&
+    pick?.predictedAdvancingTeamId === officialResult.advancingTeamId;
+
+  const hasPick =
+    pick != null &&
+    (pick.predictedAdvancingTeamId != null ||
+      (pick.homeScore != null && pick.awayScore != null));
+
   const points =
-    hasOfficial && pick?.homeScore != null && pick?.awayScore != null
+    hasOfficial && hasPick
       ? scoreMatch(
-          { homeScore: pick.homeScore, awayScore: pick.awayScore },
+          { homeScore: pick?.homeScore ?? null, awayScore: pick?.awayScore ?? null },
           officialResult,
+          advancingCorrect,
         )
       : null;
 
@@ -127,17 +149,21 @@ export function MatchCard({
           </span>
           {points === null ? (
             <span className="text-[var(--muted-ink)]">Sin pronostico</span>
-          ) : points === 3 ? (
+          ) : points === 4 ? (
             <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
-              ✓ Marcador exacto · +3
+              ✓ Ganador + marcador · +4
+            </span>
+          ) : points === 2 ? (
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
+              ✓ Marcador exacto · +2
             </span>
           ) : points === 1 ? (
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">
-              ≈ Resultado acertado · +1
+              ≈ Ganador acertado · +1
             </span>
           ) : (
             <span className="rounded-full bg-red-100 px-2 py-0.5 text-red-800">
-              ✗ Fallaste · 0
+              ✗ Sin aciertos · 0
             </span>
           )}
         </div>
