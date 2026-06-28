@@ -70,7 +70,7 @@ export function OfficialResultForm({
           hint={
             contenders.length === 0
               ? "Se definen al cargar los resultados de la ronda anterior"
-              : undefined
+              : "Si el marcador queda empatado a 90', debes elegir igual que equipo avanza."
           }
           options={[
             { label: "No registrar", value: "" },

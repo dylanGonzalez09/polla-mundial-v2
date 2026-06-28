@@ -62,6 +62,13 @@ export const idleActionState: ActionState = {
   ok: false,
 };
 
+export function isTiedScore(
+  homeScore: number | null | undefined,
+  awayScore: number | null | undefined,
+) {
+  return homeScore != null && awayScore != null && homeScore === awayScore;
+}
+
 function byMatchId(picks: PredictionPick[]) {
   return new Map(picks.map((pick) => [pick.matchId, pick]));
 }

@@ -75,6 +75,12 @@ export function ScoringRules() {
         acertaste ese ganador, aun puedes sumar +2 por el marcador exacto de la
         posicion.
       </div>
+
+      <div className="mt-3 rounded-[24px] border border-[var(--line)] bg-white px-4 py-3 text-sm leading-6 text-[var(--muted-ink)]">
+        Si pronosticas un empate a 90 minutos, igual debes marcar que equipo
+        avanza. Lo mismo aplica cuando el administrador registra un resultado
+        oficial empatado.
+      </div>
     </Surface>
   );
 }

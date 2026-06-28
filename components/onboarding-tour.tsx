@@ -61,6 +61,7 @@ const STEPS: TourStep[] = [
       "Solo marcador exacto = 2 puntos.",
       "Solo ganador = 1 punto.",
       "Sin aciertos = 0 puntos.",
+      "Si el marcador queda empatado, igual debes marcar quien avanza.",
     ],
   },
   {

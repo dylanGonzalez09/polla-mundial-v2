@@ -5,7 +5,7 @@ import { refresh, revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isRoundKey } from "@/lib/domain/rounds";
-import type { ActionState } from "@/lib/domain/validation";
+import { isTiedScore, type ActionState } from "@/lib/domain/validation";
 
 function parseDateTime(value: FormDataEntryValue | null) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -121,6 +121,17 @@ export async function recordOfficialResult(
 
   if (!Number.isFinite(matchId) || !Number.isFinite(homeScore) || !Number.isFinite(awayScore)) {
     return { ok: false, message: "Resultado invalido." };
+  }
+
+  if (advancingTeamId !== null && !Number.isFinite(advancingTeamId)) {
+    return { ok: false, message: "El equipo que avanza no es valido." };
+  }
+
+  if (isTiedScore(homeScore, awayScore) && advancingTeamId === null) {
+    return {
+      ok: false,
+      message: "Si el partido queda empatado a 90', debes indicar que equipo avanza.",
+    };
   }
 
   const supabase = await createServerSupabaseClient();
