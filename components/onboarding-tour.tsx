@@ -58,6 +58,7 @@ const STEPS: TourStep[] = [
     body: "En esta seccion tienes la regla completa. Cada posicion del bracket se evalua por el equipo que avanza y por el marcador exacto a 90 minutos.",
     highlights: [
       "Ganador + marcador exacto = 4 puntos.",
+      "Empate exacto sin acertar quien avanza = 3 puntos.",
       "Solo marcador exacto = 2 puntos.",
       "Solo ganador = 1 punto.",
       "Sin aciertos = 0 puntos.",
@@ -67,7 +68,7 @@ const STEPS: TourStep[] = [
   {
     eyebrow: "Puntaje · Ejemplo",
     title: "Cuando falla el cruce",
-    body: "Si tu imaginabas un partido distinto al real, aun puedes sumar. Si acertaste quien avanzaba en esa posicion, te llevas el punto del ganador. Si ademas pegaste el marcador exacto, te llevas 4. Y si no acertaste el ganador pero si el marcador exacto, te llevas 2.",
+    body: "Si tu imaginabas un partido distinto al real, aun puedes sumar. Si acertaste quien avanzaba en esa posicion, te llevas el punto del ganador. Si ademas pegaste el marcador exacto, te llevas 4. Y si no acertaste el ganador pero si el marcador exacto, te llevas 2. Si el oficial termina empatado, ese exacto vale 3 aunque no hayas acertado quien avanzaba.",
   },
   {
     target: '[data-tour="phases"]',

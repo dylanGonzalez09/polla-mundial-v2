@@ -5,25 +5,31 @@ const RULES = [
     points: "+4",
     title: "Ganador + marcador exacto",
     detail:
-      "Acertaste el equipo que avanzó en esa posición y además el marcador exacto a 90'.",
+      "Acertaste el equipo que avanzo en esa posicion y ademas el marcador exacto a 90 minutos.",
+  },
+  {
+    points: "+3",
+    title: "Empate exacto",
+    detail:
+      "El resultado oficial termino empatado, acertaste ese marcador exacto, pero no acertaste que equipo avanzo.",
   },
   {
     points: "+2",
     title: "Solo marcador exacto",
     detail:
-      "El marcador oficial coincide exactamente, pero no acertaste el equipo que avanzó.",
+      "El marcador oficial coincide exactamente, pero no acertaste el equipo que avanzo.",
   },
   {
     points: "+1",
     title: "Solo ganador",
     detail:
-      "Acertaste el equipo que avanzó en esa posición, aunque el marcador no sea exacto.",
+      "Acertaste el equipo que avanzo en esa posicion, aunque el marcador no sea exacto.",
   },
   {
     points: "0",
     title: "Sin aciertos",
     detail:
-      "No acertaste ni el equipo que avanzó ni el marcador exacto de esa posición.",
+      "No acertaste ni el equipo que avanzo ni el marcador exacto de esa posicion.",
   },
 ];
 
@@ -42,9 +48,7 @@ export function ScoringRules() {
 
         <p className="max-w-3xl text-sm leading-6 text-[var(--muted-ink)]">
           Cada posicion del bracket se evalua con dos cosas: el equipo que
-          oficialmente avanza y el marcador exacto a 90 minutos. El cruce real
-          no da puntos extra, pero tampoco te quita el punto del ganador si
-          igual acertaste quien paso.
+          oficialmente avanza y el marcador exacto a 90 minutos.
         </p>
       </div>
 
@@ -73,7 +77,8 @@ export function ScoringRules() {
         Si el partido que tu imaginabas era distinto al real, igual puedes sumar
         +1 o +4 si acertaste el equipo que avanzaba en esa posicion. Y si no
         acertaste ese ganador, aun puedes sumar +2 por el marcador exacto de la
-        posicion.
+        posicion. Cuando el oficial termina empatado, ese exacto vale +3 aunque
+        no hayas acertado quien avanzaba.
       </div>
 
       <div className="mt-3 rounded-[24px] border border-[var(--line)] bg-white px-4 py-3 text-sm leading-6 text-[var(--muted-ink)]">

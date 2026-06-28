@@ -13,9 +13,10 @@ type ScoreLike = {
  *
  * Reglas:
  * - Ganador correcto + marcador exacto → 4
- * - Solo ganador correcto → 1
+ * - Empate exacto, pero sin acertar quien avanza → 3
  * - Solo marcador exacto → 2
- * - Si además el cruce coincide, no suma puntos extra.
+ * - Solo ganador correcto → 1
+ * - En cualquier otro caso → 0
  */
 export function scoreMatch(
   pick: ScoreLike,
@@ -29,17 +30,25 @@ export function scoreMatch(
     official.awayScore !== null &&
     pick.homeScore === official.homeScore &&
     pick.awayScore === official.awayScore;
+  const officialDraw =
+    official.homeScore !== null &&
+    official.awayScore !== null &&
+    official.homeScore === official.awayScore;
 
   if (advancingCorrect && scoreExact) {
     return 4;
   }
 
-  if (advancingCorrect) {
-    return 1;
+  if (officialDraw && scoreExact) {
+    return 3;
   }
 
   if (scoreExact) {
     return 2;
+  }
+
+  if (advancingCorrect) {
+    return 1;
   }
 
   return 0;

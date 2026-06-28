@@ -180,6 +180,10 @@ export function MatchCard({
               <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
                 Ganador + marcador · +4
               </span>
+            ) : points === 3 ? (
+              <span className="rounded-full bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-800">
+                Empate exacto · +3
+              </span>
             ) : points === 2 ? (
               <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
                 Marcador exacto · +2
