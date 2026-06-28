@@ -266,7 +266,7 @@ export function BracketExperience({
       </div>
 
       {!prediction?.isConfirmed ? (
-        <Surface className="p-6">
+        <Surface className="p-6" data-tour="confirm">
           <form action={initialAction} className="flex flex-col gap-4">
             <input
               name="payload"
@@ -331,7 +331,7 @@ export function BracketExperience({
       ) : null}
 
       {prediction?.isConfirmed ? (
-        <Surface className="p-6">
+        <Surface className="p-6" data-tour="phases">
           <div>
             <h3 className="font-serif text-2xl text-[var(--ink)]">
               Marcadores por fase

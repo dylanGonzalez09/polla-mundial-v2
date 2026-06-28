@@ -6,9 +6,9 @@ import { logout } from "@/lib/auth/actions";
 import type { AuthProfile } from "@/lib/domain/types";
 
 const navItems = [
-  { href: "/bracket", label: "Bracket" },
-  { href: "/players", label: "Jugadores" },
-  { href: "/ranking", label: "Ranking" },
+  { href: "/bracket", label: "Bracket", tour: "nav-bracket" },
+  { href: "/players", label: "Jugadores", tour: "nav-players" },
+  { href: "/ranking", label: "Ranking", tour: "nav-ranking" },
 ];
 
 export function AppShell({
@@ -36,6 +36,7 @@ export function AppShell({
               {navItems.map((item) => (
                 <Link
                   key={item.href}
+                  data-tour={item.tour}
                   className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
                   href={item.href}
                 >

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { OnboardingTour } from "@/components/onboarding-tour";
 import { getCurrentProfile } from "@/lib/auth/dal";
 
 export default async function ProtectedLayout({
@@ -13,5 +14,10 @@ export default async function ProtectedLayout({
     redirect("/admin");
   }
 
-  return <AppShell profile={profile}>{children}</AppShell>;
+  return (
+    <AppShell profile={profile}>
+      <OnboardingTour userId={profile.id} />
+      {children}
+    </AppShell>
+  );
 }
