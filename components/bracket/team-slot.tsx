@@ -16,13 +16,15 @@ export function TeamSlot({ team, selected, disabled, onSelect }: TeamSlotProps) 
 
   return (
     <button
-      className={`flex min-h-12 w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${className} disabled:cursor-default disabled:opacity-70`}
+      className={`flex min-h-12 w-full items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition sm:items-center ${className} disabled:cursor-default disabled:opacity-70`}
       disabled={disabled || !team}
       type="button"
       onClick={onSelect}
     >
-      <span>{team?.name ?? "Por definir"}</span>
-      {selected ? <span className="text-xs uppercase tracking-[0.22em]">Avanza</span> : null}
+      <span className="min-w-0 text-pretty">{team?.name ?? "Por definir"}</span>
+      {selected ? (
+        <span className="shrink-0 text-xs uppercase tracking-[0.22em]">Avanza</span>
+      ) : null}
     </button>
   );
 }

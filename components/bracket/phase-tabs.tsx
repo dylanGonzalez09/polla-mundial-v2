@@ -42,7 +42,7 @@ export function PhaseTabs({
         {ROUND_ORDER.map((round) => (
           <button
             key={round}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
               activeRound === round
                 ? "bg-white text-[var(--ink)]"
                 : "bg-white/15 text-white"

@@ -10,11 +10,12 @@ import type { BracketMatchView, PredictionPick, Team } from "@/lib/domain/types"
 export type OfficialCell = {
   homeScore: number | null;
   awayScore: number | null;
-  /** Equipo que avanzó oficialmente en esta posición. */
   advancingTeamId?: number | null;
-  /** Equipos que realmente ocuparon el cruce (derivados de resultados oficiales). */
+  advancingTeamName?: string | null;
   realHomeTeamId?: number | null;
   realAwayTeamId?: number | null;
+  realHomeTeamName?: string | null;
+  realAwayTeamName?: string | null;
 };
 
 type MatchCardProps = {
@@ -53,8 +54,6 @@ export function MatchCard({
     officialResult.homeScore !== null &&
     officialResult.awayScore !== null;
 
-  // advancingCorrect: acertaste el equipo que avanza de esta posición
-  // (independiente de si el cruce es correcto).
   const advancingCorrect =
     hasOfficial &&
     officialResult.advancingTeamId != null &&
@@ -74,10 +73,15 @@ export function MatchCard({
         )
       : null;
 
+  const officialTeamsLabel =
+    officialResult?.realHomeTeamName && officialResult.realAwayTeamName
+      ? `${officialResult.realHomeTeamName} vs ${officialResult.realAwayTeamName}`
+      : null;
+
   return (
-    <Surface className="p-4">
+    <Surface className="p-4 sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <div className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--accent)]">
             {match.code}
           </div>
@@ -85,7 +89,7 @@ export function MatchCard({
             {ROUND_LABELS[match.round]}
           </div>
         </div>
-        <div className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--muted-ink)]">
+        <div className="shrink-0 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--muted-ink)]">
           {lockLabel}
         </div>
       </div>
@@ -109,7 +113,7 @@ export function MatchCard({
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
         <div className="flex flex-col gap-1">
           <span className="truncate text-xs font-semibold text-[var(--muted-ink)]">
             {homeTeam?.name ?? "Local"}
@@ -121,9 +125,11 @@ export function MatchCard({
             label={homeTeam?.name ?? "local"}
           />
         </div>
-        <span className="pb-2 text-sm font-semibold text-[var(--muted-ink)]">vs</span>
+        <span className="col-span-2 text-center text-sm font-semibold text-[var(--muted-ink)] sm:col-span-1 sm:pb-2">
+          vs
+        </span>
         <div className="flex flex-col gap-1">
-          <span className="truncate text-right text-xs font-semibold text-[var(--muted-ink)]">
+          <span className="truncate text-xs font-semibold text-[var(--muted-ink)] sm:text-right">
             {awayTeam?.name ?? "Visitante"}
           </span>
           <ScoreInput
@@ -143,29 +149,51 @@ export function MatchCard({
       </div>
 
       {hasOfficial ? (
-        <div className="mt-3 flex items-center justify-between gap-2 rounded-2xl bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold">
-          <span className="text-[var(--muted-ink)]">
-            Oficial {officialResult.homeScore}–{officialResult.awayScore}
-          </span>
-          {points === null ? (
-            <span className="text-[var(--muted-ink)]">Sin pronostico</span>
-          ) : points === 4 ? (
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
-              ✓ Ganador + marcador · +4
-            </span>
-          ) : points === 2 ? (
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
-              ✓ Marcador exacto · +2
-            </span>
-          ) : points === 1 ? (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">
-              ≈ Ganador acertado · +1
-            </span>
-          ) : (
-            <span className="rounded-full bg-red-100 px-2 py-0.5 text-red-800">
-              ✗ Sin aciertos · 0
-            </span>
-          )}
+        <div className="mt-4 rounded-[24px] bg-[var(--surface-soft)] px-3 py-3 sm:px-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+                Resultado oficial
+              </p>
+              {officialTeamsLabel ? (
+                <p className="text-sm font-semibold text-[var(--ink)]">
+                  {officialTeamsLabel}
+                </p>
+              ) : null}
+              <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                <span className="rounded-full bg-white px-2.5 py-1 text-[var(--ink)]">
+                  {officialResult.homeScore}-{officialResult.awayScore}
+                </span>
+                {officialResult.advancingTeamName ? (
+                  <span className="rounded-full bg-[rgba(24,99,62,0.12)] px-2.5 py-1 text-[var(--accent)]">
+                    Avanza {officialResult.advancingTeamName}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            {points === null ? (
+              <span className="text-xs font-semibold text-[var(--muted-ink)]">
+                Sin pronostico
+              </span>
+            ) : points === 4 ? (
+              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
+                Ganador + marcador · +4
+              </span>
+            ) : points === 2 ? (
+              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
+                Marcador exacto · +2
+              </span>
+            ) : points === 1 ? (
+              <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
+                Ganador acertado · +1
+              </span>
+            ) : (
+              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">
+                Sin aciertos · 0
+              </span>
+            )}
+          </div>
         </div>
       ) : null}
     </Surface>

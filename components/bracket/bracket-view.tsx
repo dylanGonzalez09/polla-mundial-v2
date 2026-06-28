@@ -32,9 +32,9 @@ export function BracketView({
 }: BracketViewProps) {
   return (
     <div className="hidden overflow-x-auto pb-2 lg:block">
-      <div className="flex gap-6">
+      <div className="flex gap-5 xl:gap-6">
       {ROUND_ORDER.map((round) => (
-        <div key={round} className="flex w-[260px] shrink-0 flex-col gap-4">
+        <div key={round} className="flex w-[272px] shrink-0 flex-col gap-4 xl:w-[288px]">
           <div>
             <h2 className="font-serif text-2xl text-white">{ROUND_LABELS[round]}</h2>
             <p className="text-sm text-white/70">

@@ -78,13 +78,17 @@ export function PeerBrowser({
               homeScore: result.homeScore,
               awayScore: result.awayScore,
               advancingTeamId: result.advancingTeamId,
+              advancingTeamName:
+                teams.find((team) => team.id === result.advancingTeamId)?.name ?? null,
               realHomeTeamId: resolved?.homeTeam?.id ?? null,
               realAwayTeamId: resolved?.awayTeam?.id ?? null,
+              realHomeTeamName: resolved?.homeTeam?.name ?? null,
+              realAwayTeamName: resolved?.awayTeam?.name ?? null,
             },
           ];
         }),
       ),
-    [officialResults, officialResolvedById],
+    [officialResults, officialResolvedById, teams],
   );
 
   const resolveTeams = (match: BracketMatchView) => {

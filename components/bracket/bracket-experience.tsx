@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 
 import { BracketView } from "@/components/bracket/bracket-view";
 import { PhaseTabs } from "@/components/bracket/phase-tabs";
+import { ScoringRules } from "@/components/bracket/scoring-rules";
 import { SubmitButton } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
@@ -143,13 +144,17 @@ export function BracketExperience({
               homeScore: result.homeScore,
               awayScore: result.awayScore,
               advancingTeamId: result.advancingTeamId,
+              advancingTeamName:
+                teams.find((team) => team.id === result.advancingTeamId)?.name ?? null,
               realHomeTeamId: resolved?.homeTeam?.id ?? null,
               realAwayTeamId: resolved?.awayTeam?.id ?? null,
+              realHomeTeamName: resolved?.homeTeam?.name ?? null,
+              realAwayTeamName: resolved?.awayTeam?.name ?? null,
             },
           ];
         }),
       ),
-    [officialResults, officialResolvedById],
+    [officialResults, officialResolvedById, teams],
   );
 
   const initialLockReason = getInitialLockReason(initialSettings, prediction);
@@ -239,12 +244,14 @@ export function BracketExperience({
           </p>
         ) : null}
 
-        {roundState.message ? (
-          <p className="mt-4 rounded-2xl bg-[var(--surface-soft)] px-4 py-3 text-sm text-[var(--muted-ink)]">
-            {roundState.message}
-          </p>
-        ) : null}
+      {roundState.message ? (
+        <p className="mt-4 rounded-2xl bg-[var(--surface-soft)] px-4 py-3 text-sm text-[var(--muted-ink)]">
+          {roundState.message}
+        </p>
+      ) : null}
       </Surface>
+
+      <ScoringRules />
 
       <div className="rounded-[32px] bg-[linear-gradient(160deg,#0f5130_0%,#0b2d1b_55%,#0b1621_100%)] p-5 sm:p-7">
         <PhaseTabs
