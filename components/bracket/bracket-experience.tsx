@@ -4,7 +4,6 @@ import { useActionState, useMemo, useState } from "react";
 
 import { BracketView } from "@/components/bracket/bracket-view";
 import { PhaseTabs } from "@/components/bracket/phase-tabs";
-import { ScoringRules } from "@/components/bracket/scoring-rules";
 import { SubmitButton } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
@@ -250,8 +249,6 @@ export function BracketExperience({
         </p>
       ) : null}
       </Surface>
-
-      <ScoringRules />
 
       <div className="rounded-[32px] bg-[linear-gradient(160deg,#0f5130_0%,#0b2d1b_55%,#0b1621_100%)] p-5 sm:p-7">
         <PhaseTabs
