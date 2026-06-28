@@ -105,23 +105,36 @@ export function DateTimeField({
   error,
   className = "",
   utcValue,
+  name,
   ...props
 }: DateTimeFieldProps) {
   // Se inicializa vacío y se completa tras montar para evitar mismatch de
   // hidratación (la conversión depende de la zona horaria del navegador).
-  const [value, setValue] = useState("");
+  const [localValue, setLocalValue] = useState("");
+  // Hidden input guarda siempre el ISO en UTC para que el server no tenga que
+  // conocer la zona horaria del usuario.
+  const [hiddenUtc, setHiddenUtc] = useState("");
 
   useEffect(() => {
-    setValue(toLocalInputValue(utcValue));
+    setLocalValue(toLocalInputValue(utcValue));
+    setHiddenUtc(utcValue ?? "");
   }, [utcValue]);
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const local = event.target.value;
+    setLocalValue(local);
+    setHiddenUtc(local ? new Date(local).toISOString() : "");
+  }
 
   return (
     <FieldFrame id={id} label={label} hint={hint} error={error}>
+      {/* Hidden input lleva el name para el form submit — valor siempre en UTC */}
+      <input type="hidden" name={name} value={hiddenUtc} />
       <input
         id={id}
         type="datetime-local"
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
+        value={localValue}
+        onChange={handleChange}
         className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent)] ${className}`}
         {...props}
       />
