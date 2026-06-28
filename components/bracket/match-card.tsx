@@ -59,6 +59,13 @@ export function MatchCard({
     officialResult.advancingTeamId != null &&
     pick?.predictedAdvancingTeamId === officialResult.advancingTeamId;
 
+  const matchupCorrect =
+    hasOfficial &&
+    officialResult.realHomeTeamId != null &&
+    officialResult.realAwayTeamId != null &&
+    homeTeam?.id === officialResult.realHomeTeamId &&
+    awayTeam?.id === officialResult.realAwayTeamId;
+
   const hasPick =
     pick != null &&
     (pick.predictedAdvancingTeamId != null ||
@@ -70,6 +77,8 @@ export function MatchCard({
           { homeScore: pick?.homeScore ?? null, awayScore: pick?.awayScore ?? null },
           officialResult,
           advancingCorrect,
+          matchupCorrect,
+          match.round === "r32",
         )
       : null;
 
@@ -182,7 +191,7 @@ export function MatchCard({
               </span>
             ) : points === 3 ? (
               <span className="rounded-full bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-800">
-                Empate exacto · +3
+                {match.round === "r32" ? "Marcador exacto · +3" : "Empate exacto · +3"}
               </span>
             ) : points === 2 ? (
               <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">

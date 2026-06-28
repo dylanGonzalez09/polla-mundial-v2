@@ -4,24 +4,27 @@ type ScoreLike = {
 };
 
 /**
- * Puntaje por partido, combinando dos dimensiones independientes:
+ * Matriz de puntaje:
  *
- * - **Ganador**: acertaste el equipo que avanza de esta posición (sin importar
- *   si el cruce fue el correcto). Para 16avos equivale a acertar quién avanza.
- * - **Cruce**: los dos equipos del cruce pronosticado coinciden con los reales.
- * - **Marcador**: el marcador exacto a 90' coincide con el oficial.
+ * - 16avos:
+ *   - ganador + marcador exacto = 4
+ *   - marcador exacto = 3
+ *   - solo ganador = 1
+ *   - resto = 0
  *
- * Reglas:
- * - Ganador correcto + marcador exacto → 4
- * - Empate exacto, pero sin acertar quien avanza → 3
- * - Solo marcador exacto → 2
- * - Solo ganador correcto → 1
- * - En cualquier otro caso → 0
+ * - Octavos en adelante:
+ *   - ganador + marcador exacto = 4
+ *   - empate exacto + cruce correcto, pero sin acertar quien avanza = 3
+ *   - solo marcador exacto = 2
+ *   - solo ganador = 1
+ *   - resto = 0
  */
 export function scoreMatch(
   pick: ScoreLike,
   official: ScoreLike,
   advancingCorrect: boolean,
+  matchupCorrect: boolean,
+  isRoundOf32: boolean,
 ) {
   const scoreExact =
     pick.homeScore !== null &&
@@ -30,6 +33,7 @@ export function scoreMatch(
     official.awayScore !== null &&
     pick.homeScore === official.homeScore &&
     pick.awayScore === official.awayScore;
+
   const officialDraw =
     official.homeScore !== null &&
     official.awayScore !== null &&
@@ -39,7 +43,11 @@ export function scoreMatch(
     return 4;
   }
 
-  if (officialDraw && scoreExact) {
+  if (isRoundOf32 && scoreExact) {
+    return 3;
+  }
+
+  if (officialDraw && matchupCorrect && scoreExact) {
     return 3;
   }
 
