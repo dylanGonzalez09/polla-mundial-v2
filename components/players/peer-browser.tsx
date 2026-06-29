@@ -67,29 +67,36 @@ export function PeerBrowser({
     );
   }, [matches, teams, officialResults]);
 
-  const officialMap = useMemo(
-    () =>
-      new Map(
-        officialResults.map((result) => {
-          const resolved = officialResolvedById.get(result.matchId);
-          return [
-            result.matchId,
-            {
-              homeScore: result.homeScore,
-              awayScore: result.awayScore,
-              advancingTeamId: result.advancingTeamId,
-              advancingTeamName:
-                teams.find((team) => team.id === result.advancingTeamId)?.name ?? null,
-              realHomeTeamId: resolved?.homeTeam?.id ?? null,
-              realAwayTeamId: resolved?.awayTeam?.id ?? null,
-              realHomeTeamName: resolved?.homeTeam?.name ?? null,
-              realAwayTeamName: resolved?.awayTeam?.name ?? null,
-            },
-          ];
-        }),
-      ),
-    [officialResults, officialResolvedById, teams],
-  );
+  const officialMap = useMemo(() => {
+    const resultById = new Map(
+      officialResults.map((result) => [result.matchId, result]),
+    );
+
+    // Construimos una celda para TODOS los partidos (no solo los que ya
+    // tienen marcador), para poder mostrar el ocupante oficial de cada cruce
+    // en la ronda siguiente aunque ese partido aun no se juegue.
+    return new Map(
+      matches.map((match) => {
+        const result = resultById.get(match.id) ?? null;
+        const resolved = officialResolvedById.get(match.id);
+        return [
+          match.id,
+          {
+            homeScore: result?.homeScore ?? null,
+            awayScore: result?.awayScore ?? null,
+            advancingTeamId: result?.advancingTeamId ?? null,
+            advancingTeamName:
+              teams.find((team) => team.id === result?.advancingTeamId)?.name ??
+              null,
+            realHomeTeamId: resolved?.homeTeam?.id ?? null,
+            realAwayTeamId: resolved?.awayTeam?.id ?? null,
+            realHomeTeamName: resolved?.homeTeam?.name ?? null,
+            realAwayTeamName: resolved?.awayTeam?.name ?? null,
+          },
+        ];
+      }),
+    );
+  }, [matches, officialResults, officialResolvedById, teams]);
 
   const resolveTeams = (match: BracketMatchView) => {
     const resolved = resolvedMatchMap.get(match.id);
