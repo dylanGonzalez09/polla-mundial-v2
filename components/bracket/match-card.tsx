@@ -5,7 +5,11 @@ import { TeamSlot } from "@/components/bracket/team-slot";
 import { Surface } from "@/components/ui/card";
 import { ROUND_LABELS } from "@/lib/domain/rounds";
 import { scoreMatch } from "@/lib/domain/scoring";
-import type { BracketMatchView, PredictionPick, Team } from "@/lib/domain/types";
+import type {
+  BracketMatchView,
+  PredictionPick,
+  Team,
+} from "@/lib/domain/types";
 
 export type OfficialCell = {
   homeScore: number | null;
@@ -30,6 +34,19 @@ type MatchCardProps = {
   onPickWinner?: (teamId: number) => void;
   onChangeScore?: (side: "home" | "away", value: number | null) => void;
 };
+
+function OfficialOccupant({ name }: { name: string }) {
+  return (
+    <div className="ml-3 flex items-center gap-2 rounded-xl border border-dashed border-[var(--danger)] bg-[rgba(176,0,32,0.06)] px-3 py-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--danger)]">
+        Avanzó
+      </span>
+      <span className="truncate text-xs font-semibold text-[var(--ink)]">
+        {name}
+      </span>
+    </div>
+  );
+}
 
 export function MatchCard({
   match,
@@ -74,13 +91,29 @@ export function MatchCard({
   const points =
     hasOfficial && hasPick
       ? scoreMatch(
-          { homeScore: pick?.homeScore ?? null, awayScore: pick?.awayScore ?? null },
+          {
+            homeScore: pick?.homeScore ?? null,
+            awayScore: pick?.awayScore ?? null,
+          },
           officialResult,
           advancingCorrect,
           matchupCorrect,
           match.round === "r32",
         )
       : null;
+
+  // El ocupante real de cada slot (derivado de los avances oficiales de la
+  // ronda anterior) difiere del equipo que el usuario habia puesto. Sirve para
+  // mostrar quien paso de verdad sin borrar la prediccion del usuario.
+  const officialHomeMismatch =
+    officialResult?.realHomeTeamId != null &&
+    officialResult.realHomeTeamId !== homeTeam?.id &&
+    officialResult.realHomeTeamName != null;
+
+  const officialAwayMismatch =
+    officialResult?.realAwayTeamId != null &&
+    officialResult.realAwayTeamId !== awayTeam?.id &&
+    officialResult.realAwayTeamName != null;
 
   const officialTeamsLabel =
     officialResult?.realHomeTeamName && officialResult.realAwayTeamName
@@ -104,22 +137,36 @@ export function MatchCard({
       </div>
 
       <div className="space-y-3">
-        <TeamSlot
-          team={homeTeam}
-          selected={pick?.predictedAdvancingTeamId === homeTeam?.id}
-          disabled={readOnly || !canEditTeams}
-          onSelect={
-            homeTeam && onPickWinner ? () => onPickWinner(homeTeam.id) : undefined
-          }
-        />
-        <TeamSlot
-          team={awayTeam}
-          selected={pick?.predictedAdvancingTeamId === awayTeam?.id}
-          disabled={readOnly || !canEditTeams}
-          onSelect={
-            awayTeam && onPickWinner ? () => onPickWinner(awayTeam.id) : undefined
-          }
-        />
+        <div className="space-y-1">
+          <TeamSlot
+            team={homeTeam}
+            selected={pick?.predictedAdvancingTeamId === homeTeam?.id}
+            disabled={readOnly || !canEditTeams}
+            onSelect={
+              homeTeam && onPickWinner
+                ? () => onPickWinner(homeTeam.id)
+                : undefined
+            }
+          />
+          {officialHomeMismatch ? (
+            <OfficialOccupant name={officialResult!.realHomeTeamName!} />
+          ) : null}
+        </div>
+        <div className="space-y-1">
+          <TeamSlot
+            team={awayTeam}
+            selected={pick?.predictedAdvancingTeamId === awayTeam?.id}
+            disabled={readOnly || !canEditTeams}
+            onSelect={
+              awayTeam && onPickWinner
+                ? () => onPickWinner(awayTeam.id)
+                : undefined
+            }
+          />
+          {officialAwayMismatch ? (
+            <OfficialOccupant name={officialResult!.realAwayTeamName!} />
+          ) : null}
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
@@ -127,6 +174,11 @@ export function MatchCard({
           <span className="truncate text-xs font-semibold text-[var(--muted-ink)]">
             {homeTeam?.name ?? "Local"}
           </span>
+          {officialHomeMismatch ? (
+            <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--danger)]">
+              Avanzó {officialResult!.realHomeTeamName!}
+            </span>
+          ) : null}
           <ScoreInput
             disabled={readOnly || !canEditScores}
             value={pick?.homeScore ?? null}
@@ -141,6 +193,11 @@ export function MatchCard({
           <span className="truncate text-xs font-semibold text-[var(--muted-ink)] sm:text-right">
             {awayTeam?.name ?? "Visitante"}
           </span>
+          {officialAwayMismatch ? (
+            <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--danger)] sm:text-right">
+              Avanzó {officialResult!.realAwayTeamName!}
+            </span>
+          ) : null}
           <ScoreInput
             disabled={readOnly || !canEditScores}
             value={pick?.awayScore ?? null}
@@ -150,10 +207,14 @@ export function MatchCard({
         </div>
       </div>
 
-      <div className="mt-4 text-xs text-[var(--muted-ink)]">
+      <div
+        className="mt-4 text-xs text-[var(--muted-ink)]"
+        suppressHydrationWarning
+      >
         {new Intl.DateTimeFormat("es-CO", {
           dateStyle: "medium",
           timeStyle: "short",
+          timeZone: "America/Bogota",
         }).format(new Date(match.matchDate))}
       </div>
 
@@ -191,7 +252,9 @@ export function MatchCard({
               </span>
             ) : points === 3 ? (
               <span className="rounded-full bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-800">
-                {match.round === "r32" ? "Marcador exacto · +3" : "Empate exacto · +3"}
+                {match.round === "r32"
+                  ? "Marcador exacto · +3"
+                  : "Empate exacto · +3"}
               </span>
             ) : points === 2 ? (
               <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
