@@ -17,7 +17,7 @@ export function ScoreInput({ value, disabled, onChange, label }: ScoreInputProps
       maxLength={2}
       type="text"
       aria-label={label ? `Marcador ${label}` : "Marcador"}
-      placeholder="0"
+      placeholder="–"
       value={value === null ? "" : String(value)}
       onChange={(event) => {
         // Solo digitos: descarta signos, letras, "e", puntos, etc.

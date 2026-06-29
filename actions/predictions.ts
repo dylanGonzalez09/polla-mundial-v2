@@ -201,8 +201,23 @@ export async function submitRoundScores(
     return { ok: false, message: submissionError.message };
   }
 
+  // Si el admin ya reveló el resultado de algún partido de esta ronda,
+  // recalcular los puntos del usuario para esos partidos.
+  const submittedMatchIds = parsed.data.picks.map((p) => p.matchId);
+  const { data: existingResults } = await supabase
+    .from("official_results")
+    .select("match_id")
+    .in("match_id", submittedMatchIds);
+
+  if (existingResults && existingResults.length > 0) {
+    for (const result of existingResults) {
+      await supabase.rpc("recompute_scores", { target_match_id: result.match_id });
+    }
+  }
+
   revalidatePath("/bracket");
   revalidatePath("/players");
+  revalidatePath("/ranking");
   refresh();
   return { ok: true, message: "Marcadores enviados correctamente." };
 }

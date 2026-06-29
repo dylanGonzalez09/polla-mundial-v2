@@ -298,7 +298,15 @@ export function BracketExperience({
 
       {!prediction?.isConfirmed ? (
         <Surface className="p-6" data-tour="confirm">
-          <form action={initialAction} className="flex flex-col gap-4">
+          <form
+            action={initialAction}
+            className="flex flex-col gap-4"
+            onSubmit={(e) => {
+              if (!initialComplete) {
+                e.preventDefault();
+              }
+            }}
+          >
             <input
               name="payload"
               type="hidden"
@@ -426,7 +434,14 @@ export function BracketExperience({
                     </span>
                   </div>
 
-                  <form action={roundAction}>
+                  <form
+                    action={roundAction}
+                    onSubmit={(e) => {
+                      if (!ready) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
                     <input
                       name="payload"
                       type="hidden"
