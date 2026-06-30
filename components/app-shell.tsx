@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
+import { UpdateBanner } from "@/components/update-banner";
 import { logout } from "@/lib/auth/actions";
 import type { AuthProfile } from "@/lib/domain/types";
 
@@ -58,6 +59,8 @@ export function AppShell({
           </div>
         </div>
       </Surface>
+
+      <UpdateBanner />
 
       {children}
     </div>
