@@ -7,7 +7,7 @@ import { useState, useSyncExternalStore } from "react";
 // dismissed a previous update.
 const LATEST_UPDATE = {
   id: "2026-06-30-player-match-filter",
-  text: "Nueva actualización ⚠️: Ahora en la pestaña Jugadores ahora puedes filtrar por un partido especifico (pais vs pais) para ver de un vistazo que pronostico cada jugador.",
+  text: "Nueva actualización ⚠️: Ahora en la pestaña Jugadores puedes filtrar por un partido especifico (pais vs pais) para ver que pronostico cada jugador.",
 };
 
 const noopSubscribe = () => () => {};

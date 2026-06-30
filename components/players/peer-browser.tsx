@@ -231,9 +231,9 @@ export function PeerBrowser({
           pronostico cada jugador en ese partido, sin tener que abrir cuadro por
           cuadro. Usa &quot;Limpiar filtro&quot; para volver a la vista por jugador.
         </p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <select
-            className="rounded-full border border-[var(--line)] bg-[var(--surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--ink)]"
+            className="w-full min-w-0 max-w-full truncate rounded-full border border-[var(--line)] bg-[var(--surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--ink)] sm:max-w-sm"
             value={selectedMatchId ?? ""}
             onChange={(event) =>
               setSelectedMatchId(
@@ -256,7 +256,7 @@ export function PeerBrowser({
             type="button"
             disabled={selectedMatchId == null}
             onClick={() => setSelectedMatchId(null)}
-            className="rounded-full px-4 py-2 text-sm font-semibold text-[var(--muted-ink)] underline decoration-dotted disabled:cursor-not-allowed disabled:opacity-40"
+            className="self-start rounded-full px-4 py-2 text-sm font-semibold text-[var(--muted-ink)] underline decoration-dotted disabled:cursor-not-allowed disabled:opacity-40 sm:self-auto"
           >
             Limpiar filtro
           </button>
@@ -287,7 +287,9 @@ export function PeerBrowser({
               </p>
             )}
           </div>
-          <div className="grid grid-cols-[1.4fr_1.6fr_1fr_0.8fr] gap-2 border-b border-[var(--line)] bg-[var(--surface-soft)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:px-8">
+          <div className="overflow-x-auto">
+          <div className="sm:min-w-[640px]">
+          <div className="hidden gap-2 border-b border-[var(--line)] bg-[var(--surface-soft)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:grid sm:grid-cols-[1.4fr_1.6fr_1fr_0.8fr] sm:px-8">
             <span>Jugador</span>
             <span>Marcador pronosticado</span>
             <span>Resultado</span>
@@ -307,42 +309,57 @@ export function PeerBrowser({
               }) => (
               <div
                 key={peer.userId}
-                className="grid grid-cols-[1.4fr_1.6fr_1fr_0.8fr] items-center gap-2 px-6 py-4 sm:px-8"
+                className="grid grid-cols-1 gap-2 px-6 py-4 sm:grid-cols-[1.4fr_1.6fr_1fr_0.8fr] sm:items-center sm:gap-2 sm:px-8"
               >
                 <span className="font-semibold text-[var(--ink)]">
                   {peer.displayName}
                 </span>
                 <span className="text-sm text-[var(--ink)]">
-                  {homeTeam && awayTeam && homeScore != null && awayScore != null
-                    ? `${homeTeam.name} ${homeScore} - ${awayScore} ${awayTeam.name}`
-                    : "Sin marcador"}
+                  <span className="mr-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:hidden">
+                    Marcador pronosticado:{" "}
+                  </span>
+                  <span className="break-words">
+                    {homeTeam && awayTeam && homeScore != null && awayScore != null
+                      ? `${homeTeam.name} ${homeScore} - ${awayScore} ${awayTeam.name}`
+                      : "Sin marcador"}
+                  </span>
                   {predictedTeam ? (
                     <span className="block text-xs text-[var(--muted-ink)]">
                       Pronostico avanza: {predictedTeam.name}
                     </span>
                   ) : null}
                 </span>
-                <span
-                  className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                    isCorrect === true
-                      ? "bg-emerald-100 text-emerald-800"
+                <span>
+                  <span className="mr-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:hidden">
+                    Resultado:{" "}
+                  </span>
+                  <span
+                    className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                      isCorrect === true
+                        ? "bg-emerald-100 text-emerald-800"
+                        : isCorrect === false
+                          ? "bg-red-100 text-red-800"
+                          : "bg-[var(--surface-soft)] text-[var(--muted-ink)]"
+                    }`}
+                  >
+                    {isCorrect === true
+                      ? "Acerto quien avanza"
                       : isCorrect === false
-                        ? "bg-red-100 text-red-800"
-                        : "bg-[var(--surface-soft)] text-[var(--muted-ink)]"
-                  }`}
-                >
-                  {isCorrect === true
-                    ? "Acerto quien avanza"
-                    : isCorrect === false
-                      ? "Fallo quien avanza"
-                      : "Sin resultado oficial"}
+                        ? "Fallo quien avanza"
+                        : "Sin resultado oficial"}
+                  </span>
                 </span>
-                <span className="text-right text-sm font-semibold text-[var(--ink)]">
+                <span className="text-sm font-semibold text-[var(--ink)] sm:text-right">
+                  <span className="mr-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:hidden">
+                    Puntos:{" "}
+                  </span>
                   {points != null ? `${points} pts` : "—"}
                 </span>
               </div>
               ),
             )}
+          </div>
+          </div>
           </div>
         </Surface>
       ) : (
