@@ -54,6 +54,9 @@ export function AuthForm({
             label={field.label}
             autoComplete={field.autoComplete}
             error={state.fieldErrors?.[field.id]?.[0]}
+            defaultValue={
+              field.type === "password" ? undefined : state.values?.[field.id]
+            }
             required
           />
         ))}

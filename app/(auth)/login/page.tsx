@@ -46,6 +46,13 @@ export default function LoginPage() {
                 <Link className="font-semibold text-[var(--accent)]" href="/register">
                   Registrate
                 </Link>
+                <br />
+                <Link
+                  className="font-semibold text-[var(--accent)]"
+                  href="/forgot-password"
+                >
+                  Olvidaste tu contrasena?
+                </Link>
               </>
             }
           />

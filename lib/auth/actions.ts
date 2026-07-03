@@ -1,13 +1,16 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { env } from "@/lib/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
+  forgotPasswordSchema,
   idleActionState,
   loginSchema,
   signupSchema,
+  updatePasswordSchema,
   type ActionState,
 } from "@/lib/domain/validation";
 
@@ -46,16 +49,22 @@ export async function signup(
   formData: FormData,
 ): Promise<ActionState> {
   void previousState;
+  const rawEmail = formData.get("email");
+  const rawDisplayName = formData.get("displayName");
   const parsed = signupSchema.safeParse({
-    email: formData.get("email"),
+    email: rawEmail,
     password: formData.get("password"),
-    displayName: formData.get("displayName"),
+    displayName: rawDisplayName,
   });
 
   if (!parsed.success) {
     return {
       ok: false,
       fieldErrors: parsed.error.flatten().fieldErrors,
+      values: {
+        email: typeof rawEmail === "string" ? rawEmail : "",
+        displayName: typeof rawDisplayName === "string" ? rawDisplayName : "",
+      },
     };
   }
 
@@ -80,6 +89,7 @@ export async function signup(
       ok: false,
       fieldErrors: duplicate ? { email: ["Ese correo ya esta registrado."] } : undefined,
       message: duplicate ? undefined : fieldErrors(error),
+      values: { email, displayName },
     };
   }
 
@@ -91,8 +101,9 @@ export async function login(
   formData: FormData,
 ): Promise<ActionState> {
   void previousState;
+  const rawEmail = formData.get("email");
   const parsed = loginSchema.safeParse({
-    email: formData.get("email"),
+    email: rawEmail,
     password: formData.get("password"),
   });
 
@@ -100,6 +111,7 @@ export async function login(
     return {
       ok: false,
       fieldErrors: parsed.error.flatten().fieldErrors,
+      values: { email: typeof rawEmail === "string" ? rawEmail : "" },
     };
   }
 
@@ -118,6 +130,7 @@ export async function login(
         password: ["Credenciales invalidas."],
       },
       message: "No fue posible iniciar sesion.",
+      values: { email },
     };
   }
 
@@ -128,4 +141,89 @@ export async function logout() {
   const supabase = await createServerSupabaseClient();
   await supabase.auth.signOut();
   redirect("/login");
+}
+
+export async function requestPasswordReset(
+  previousState: ActionState = idleActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  void previousState;
+  const rawEmail = formData.get("email");
+  const parsed = forgotPasswordSchema.safeParse({
+    email: rawEmail,
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      fieldErrors: parsed.error.flatten().fieldErrors,
+      values: { email: typeof rawEmail === "string" ? rawEmail : "" },
+    };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin") ?? `https://${requestHeaders.get("host")}`;
+
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${origin}/auth/confirm?next=/update-password`,
+  });
+
+  return {
+    ok: true,
+    message:
+      "Si ese correo esta registrado, te enviamos un enlace para restablecer tu contrasena.",
+  };
+}
+
+export async function confirmPasswordRecovery(formData: FormData) {
+  const code = formData.get("code");
+  const nextParam = formData.get("next");
+  const next = typeof nextParam === "string" && nextParam.startsWith("/")
+    ? nextParam
+    : "/update-password";
+
+  if (typeof code !== "string" || !code) {
+    redirect("/login");
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    redirect("/login");
+  }
+
+  redirect(next);
+}
+
+export async function updatePassword(
+  previousState: ActionState = idleActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  void previousState;
+  const parsed = updatePasswordSchema.safeParse({
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password,
+  });
+
+  if (error) {
+    return {
+      ok: false,
+      message: fieldErrors(error),
+    };
+  }
+
+  redirect(await resolveLandingPath(supabase));
 }

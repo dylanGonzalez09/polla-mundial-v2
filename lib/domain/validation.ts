@@ -27,6 +27,16 @@ export const loginSchema = z.object({
   password: z.string().min(1, "La contrasena es obligatoria."),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.email("Ingresa un correo valido."),
+});
+
+export const updatePasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, "La contrasena debe tener al menos 8 caracteres."),
+});
+
 export const initialPredictionPayloadSchema = z.object({
   confirmed: z.literal(true),
   picks: z.array(
@@ -56,6 +66,7 @@ export type ActionState = {
   ok: boolean;
   message?: string;
   fieldErrors?: FormErrors;
+  values?: Record<string, string>;
 };
 
 export const idleActionState: ActionState = {
