@@ -2,8 +2,8 @@
 
 import { useActionState, useMemo, useState } from "react";
 
-import { BracketView } from "@/components/bracket/bracket-view";
-import { PhaseTabs } from "@/components/bracket/phase-tabs";
+import { BracketFlow } from "@/components/bracket/bracket-flow";
+import { MapUsageHint } from "@/components/bracket/map-usage-hint";
 import { SubmitButton } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
@@ -257,30 +257,10 @@ export function BracketExperience({
       ) : null}
       </Surface>
 
-      <div className="rounded-[32px] bg-[linear-gradient(160deg,#0f5130_0%,#0b2d1b_55%,#0b1621_100%)] p-5 sm:p-7">
-        <PhaseTabs
-          matches={matchesByStage}
-          picks={pickMap}
-          canEditTeams={canEditTeams}
-          canEditScores={canEditScoresForMatch}
-          onPickWinner={(matchId, teamId) =>
-            updatePick(matchId, (current) => ({
-              ...current,
-              predictedAdvancingTeamId: teamId,
-            }))
-          }
-          onChangeScore={(matchId, side, value) =>
-            updatePick(matchId, (current) => ({
-              ...current,
-              homeScore: side === "home" ? value : current.homeScore,
-              awayScore: side === "away" ? value : current.awayScore,
-            }))
-          }
-          resolveTeams={resolveTeams}
-          officialResults={officialMap}
-        />
+      <MapUsageHint />
 
-        <BracketView
+      <div className="rounded-[32px] bg-[linear-gradient(160deg,#0f5130_0%,#0b2d1b_55%,#0b1621_100%)] p-2 sm:p-4">
+        <BracketFlow
           matches={matchesByStage}
           picks={pickMap}
           canEditTeams={canEditTeams}

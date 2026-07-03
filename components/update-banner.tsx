@@ -6,8 +6,8 @@ import { useState, useSyncExternalStore } from "react";
 // Changing `id` makes the banner reappear for everyone, even users who
 // dismissed a previous update.
 const LATEST_UPDATE = {
-  id: "2026-06-30-player-match-filter",
-  text: "Nueva actualización ⚠️: Ahora en la pestaña Jugadores puedes filtrar por un partido especifico (pais vs pais) para ver que pronostico cada jugador.",
+  id: "2026-07-02-map",
+  text: "Nueva actualización ⚠️: Ahora tienes un mapa visual mas organizado para ver tu pronostico.",
 };
 
 const noopSubscribe = () => () => {};

@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { BracketView } from "@/components/bracket/bracket-view";
-import { PhaseTabs } from "@/components/bracket/phase-tabs";
+import { BracketFlow } from "@/components/bracket/bracket-flow";
+import { MapUsageHint } from "@/components/bracket/map-usage-hint";
 import { Surface } from "@/components/ui/card";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
 import { ROUND_LABELS, ROUND_ORDER } from "@/lib/domain/rounds";
@@ -412,19 +412,10 @@ export function PeerBrowser({
             </div>
           </Surface>
 
-          <div className="rounded-[32px] bg-[linear-gradient(160deg,#12324b_0%,#091c2c_100%)] p-5 sm:p-7">
-            <PhaseTabs
-              matches={byRound}
-              picks={pickMap}
-              canEditTeams={() => false}
-              canEditScores={() => false}
-              onPickWinner={() => {}}
-              onChangeScore={() => {}}
-              resolveTeams={resolveTeams}
-              officialResults={officialMap}
-              readOnly
-            />
-            <BracketView
+          <MapUsageHint readOnly />
+
+          <div className="rounded-[32px] bg-[linear-gradient(160deg,#12324b_0%,#091c2c_100%)] p-2 sm:p-4">
+            <BracketFlow
               matches={byRound}
               picks={pickMap}
               canEditTeams={() => false}
