@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { logout } from "@/lib/auth/actions";
@@ -26,6 +28,21 @@ export default async function AdminLayout({
           </form>
         </div>
       </Surface>
+
+      <nav className="flex flex-wrap gap-3">
+        <Link
+          className="rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+          href="/admin"
+        >
+          Resultados oficiales
+        </Link>
+        <Link
+          className="rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+          href="/admin/correcciones"
+        >
+          Correcciones de jugadores
+        </Link>
+      </nav>
 
       {children}
     </div>

@@ -15,6 +15,15 @@ function parseDateTime(value: FormDataEntryValue | null) {
   return new Date(value).toISOString();
 }
 
+function parseOptionalInteger(value: FormDataEntryValue | null) {
+  if (typeof value !== "string" || value.trim() === "") {
+    return null;
+  }
+
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : Number.NaN;
+}
+
 export async function setPhaseWindow(
   _previousState: ActionState,
   formData: FormData,
@@ -159,4 +168,66 @@ export async function recordOfficialResult(
   revalidatePath("/players");
   refresh();
   return { ok: true, message: "Resultado oficial guardado." };
+}
+
+export async function correctPredictionPick(
+  _previousState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const predictionId = formData.get("predictionId");
+  const matchId = Number(formData.get("matchId"));
+  const homeScore = parseOptionalInteger(formData.get("homeScore"));
+  const awayScore = parseOptionalInteger(formData.get("awayScore"));
+  const advancingTeamId = parseOptionalInteger(formData.get("advancingTeamId"));
+
+  if (typeof predictionId !== "string" || predictionId.trim() === "") {
+    return { ok: false, message: "Prediccion invalida." };
+  }
+
+  if (!Number.isInteger(matchId)) {
+    return { ok: false, message: "Partido invalido." };
+  }
+
+  if (
+    (homeScore !== null && (!Number.isFinite(homeScore) || homeScore < 0)) ||
+    (awayScore !== null && (!Number.isFinite(awayScore) || awayScore < 0))
+  ) {
+    return { ok: false, message: "Los marcadores deben ser enteros no negativos." };
+  }
+
+  if ((homeScore === null) !== (awayScore === null)) {
+    return {
+      ok: false,
+      message: "Debes completar ambos marcadores o dejar ambos vacios.",
+    };
+  }
+
+  if (
+    advancingTeamId !== null &&
+    (!Number.isFinite(advancingTeamId) || advancingTeamId < 0)
+  ) {
+    return { ok: false, message: "El equipo que avanza no es valido." };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.rpc("admin_update_prediction_pick", {
+    target_prediction_id: predictionId,
+    target_match_id: matchId,
+    target_home_score: homeScore,
+    target_away_score: awayScore,
+    target_advancing_team_id: advancingTeamId,
+  });
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath("/admin/correcciones");
+  revalidatePath("/ranking");
+  revalidatePath("/players");
+  revalidatePath("/bracket");
+  refresh();
+  return { ok: true, message: "Prediccion corregida y puntos recalculados." };
 }

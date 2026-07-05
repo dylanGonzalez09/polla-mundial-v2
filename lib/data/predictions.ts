@@ -3,6 +3,7 @@ import "server-only";
 import { verifySession } from "@/lib/auth/dal";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
+  AdminPredictionCorrectionRow,
   Prediction,
   PredictionPhaseSubmission,
   PredictionPick,
@@ -81,4 +82,32 @@ export async function getCurrentUserPrediction() {
     })) ?? [];
 
   return { prediction, picks, submissions };
+}
+
+export async function getAdminPredictionCorrections(): Promise<
+  AdminPredictionCorrectionRow[]
+> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase.rpc("get_admin_prediction_corrections");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row: Record<string, unknown>) => ({
+    userId: String(row.user_id),
+    displayName: String(row.display_name),
+    predictionId: String(row.prediction_id),
+    isConfirmed: Boolean(row.is_confirmed),
+    totalPoints: Number(row.total_points ?? 0),
+    pickId: String(row.pick_id),
+    matchId: Number(row.match_id),
+    predictedAdvancingTeamId:
+      row.predicted_advancing_team_id == null
+        ? null
+        : Number(row.predicted_advancing_team_id),
+    homeScore: row.home_score == null ? null : Number(row.home_score),
+    awayScore: row.away_score == null ? null : Number(row.away_score),
+    points: Number(row.points ?? 0),
+  }));
 }
