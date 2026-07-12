@@ -5,7 +5,10 @@ import { useMemo, useState } from "react";
 import { BracketFlow } from "@/components/bracket/bracket-flow";
 import { MapUsageHint } from "@/components/bracket/map-usage-hint";
 import { Surface } from "@/components/ui/card";
+import { Flag } from "@/components/ui/flag";
+import { LeagueBadge } from "@/components/ui/league-badge";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
+import { getLeague } from "@/lib/domain/leagues";
 import { ROUND_LABELS, ROUND_ORDER } from "@/lib/domain/rounds";
 import { scoreMatch } from "@/lib/domain/scoring";
 import type {
@@ -223,7 +226,7 @@ export function PeerBrowser({
   return (
     <div className="space-y-6">
       <Surface className="p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--primary)]">
           Filtrar por partido
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted-ink)]">
@@ -266,7 +269,7 @@ export function PeerBrowser({
       {selectedMatch ? (
         <Surface className="overflow-hidden">
           <div className="border-b border-[var(--line)] px-6 py-4 sm:px-8">
-            <h2 className="font-serif text-2xl text-[var(--ink)]">
+            <h2 className="font-display text-xl text-[var(--ink)]">
               {matchOptionsByRound
                 .flatMap((group) => group.options)
                 .find((option) => option.id === selectedMatch.id)?.label ??
@@ -318,10 +321,15 @@ export function PeerBrowser({
                   <span className="mr-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)] sm:hidden">
                     Marcador pronosticado:{" "}
                   </span>
-                  <span className="break-words">
-                    {homeTeam && awayTeam && homeScore != null && awayScore != null
-                      ? `${homeTeam.name} ${homeScore} - ${awayScore} ${awayTeam.name}`
-                      : "Sin marcador"}
+                  <span className="tabular-nums flex items-center gap-1.5 break-words">
+                    {homeTeam && awayTeam && homeScore != null && awayScore != null ? (
+                      <>
+                        <Flag code={homeTeam.code} /> {homeTeam.name} {homeScore} - {awayScore}{" "}
+                        {awayTeam.name} <Flag code={awayTeam.code} />
+                      </>
+                    ) : (
+                      "Sin marcador"
+                    )}
                   </span>
                   {predictedTeam ? (
                     <span className="block text-xs text-[var(--muted-ink)]">
@@ -369,14 +377,15 @@ export function PeerBrowser({
               {peers.map((peer) => (
                 <button
                   key={peer.userId}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
                     peer.userId === activePeerId
-                      ? "bg-[var(--accent)] text-white"
+                      ? "bg-[var(--primary)] text-white"
                       : "bg-[var(--surface-soft)] text-[var(--muted-ink)]"
                   }`}
                   type="button"
                   onClick={() => setActivePeerId(peer.userId)}
                 >
+                  <LeagueBadge tier={getLeague(peer.totalPoints).tier} size="sm" />
                   {peer.displayName}
                 </button>
               ))}
@@ -386,12 +395,17 @@ export function PeerBrowser({
           {activePeer ? (
             <>
               <Surface className="p-6">
-                <h2 className="font-serif text-3xl text-[var(--ink)]">
-              {activePeer.displayName}
-            </h2>
-            <p className="mt-2 text-sm text-[var(--muted-ink)]">
-              Puntaje total: {activePeer.totalPoints}
-            </p>
+                <div className="flex items-center gap-3">
+                  <LeagueBadge tier={getLeague(activePeer.totalPoints).tier} size="lg" />
+                  <div>
+                    <h2 className="font-display text-2xl text-[var(--ink)]">
+                      {activePeer.displayName}
+                    </h2>
+                    <p className="tabular-nums mt-1 text-sm text-[var(--muted-ink)]">
+                      {getLeague(activePeer.totalPoints).label} · {activePeer.totalPoints} pts
+                    </p>
+                  </div>
+                </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {unlockedRounds.map((round) => {
                 const submitted = activePeer.phaseStatus[round] ?? false;
@@ -414,7 +428,7 @@ export function PeerBrowser({
 
           <MapUsageHint readOnly />
 
-          <div className="rounded-[32px] bg-[linear-gradient(160deg,#12324b_0%,#091c2c_100%)] p-2 sm:p-4">
+          <div className="pattern-stadium rounded-[32px] p-2 sm:p-4">
             <BracketFlow
               matches={byRound}
               picks={pickMap}

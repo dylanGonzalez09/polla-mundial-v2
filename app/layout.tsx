@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Source_Serif_4 } from "next/font/google";
+import { Archivo_Black, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -7,13 +7,14 @@ const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
 });
 
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
+const archivoBlack = Archivo_Black({
+  variable: "--font-archivo-black",
+  weight: "400",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Polla Mundial",
+  title: "Polla Mundial 26",
   description: "Bracket prediction pool con Supabase y Next.js 16.",
 };
 
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${bricolage.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${bricolage.variable} ${archivoBlack.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

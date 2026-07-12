@@ -46,7 +46,7 @@ export function UpdateBanner() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--accent)] bg-amber-50 px-5 py-3 text-sm text-[var(--ink)]">
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--primary)] bg-amber-50 px-5 py-3 text-sm text-[var(--ink)]">
       <p className="font-medium leading-5">{LATEST_UPDATE.text}</p>
       <button
         type="button"

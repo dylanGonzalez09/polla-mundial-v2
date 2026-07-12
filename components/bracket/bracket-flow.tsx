@@ -17,6 +17,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { MatchCard, type OfficialCell } from "@/components/bracket/match-card";
+import { Flag } from "@/components/ui/flag";
 import { ROUND_LABELS, ROUND_ORDER } from "@/lib/domain/rounds";
 import { scoreMatch } from "@/lib/domain/scoring";
 import type {
@@ -32,57 +33,6 @@ const GAP_X = 72;
 const GAP_Y = 18;
 const COL_W = NODE_W + GAP_X;
 const ROW_H = NODE_H + GAP_Y;
-
-// Codigos FIFA -> ISO 3166-1 alfa-2, solo para pintar la bandera emoji.
-const FIFA_TO_ISO2: Record<string, string> = {
-  RSA: "ZA",
-  CAN: "CA",
-  GER: "DE",
-  PAR: "PY",
-  NED: "NL",
-  MAR: "MA",
-  BRA: "BR",
-  JPN: "JP",
-  FRA: "FR",
-  SWE: "SE",
-  CIV: "CI",
-  NOR: "NO",
-  MEX: "MX",
-  ECU: "EC",
-  COD: "CD",
-  USA: "US",
-  BIH: "BA",
-  BEL: "BE",
-  SEN: "SN",
-  POR: "PT",
-  HRV: "HR",
-  ESP: "ES",
-  AUT: "AT",
-  SUI: "CH",
-  DZA: "DZ",
-  ARG: "AR",
-  CPV: "CV",
-  COL: "CO",
-  GHA: "GH",
-  AUS: "AU",
-  EGY: "EG",
-};
-
-function teamFlag(code: string | undefined) {
-  if (!code) {
-    return "🏳️";
-  }
-  if (code === "ENG") {
-    return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-  }
-  const iso = FIFA_TO_ISO2[code];
-  if (!iso) {
-    return "🏳️";
-  }
-  return String.fromCodePoint(
-    ...[...iso].map((char) => 127397 + char.charCodeAt(0)),
-  );
-}
 
 type MatchNodeData = {
   match: BracketMatchView;
@@ -149,18 +99,16 @@ function TeamRow({
     <div
       className={`flex h-7 items-center gap-1.5 rounded-lg px-1.5 ${
         picked
-          ? "bg-[rgba(24,99,62,0.14)] ring-1 ring-[var(--accent)]"
+          ? "bg-[rgba(0,168,89,0.14)] ring-1 ring-[var(--primary)]"
           : "bg-transparent"
-      } ${mismatchName ? "ring-1 ring-inset ring-[var(--danger)]" : ""}`}
+      } ${mismatchName ? "ring-1 ring-inset ring-[var(--live)]" : ""}`}
       title={
         mismatchName
           ? `Tu pick: ${team?.name ?? "por definir"} · Avanzó: ${mismatchName}`
           : team?.name
       }
     >
-      <span aria-hidden className="text-sm leading-none">
-        {teamFlag(team?.code)}
-      </span>
+      <Flag code={team?.code} className="text-sm" />
       <span
         className={`min-w-0 flex-1 truncate text-xs font-semibold ${
           team ? "text-[var(--ink)]" : "text-[var(--muted-ink)]"
@@ -169,11 +117,11 @@ function TeamRow({
         {team?.name ?? "Por definir"}
       </span>
       {picked ? (
-        <span aria-hidden className="text-[10px] font-bold text-[var(--accent)]">
+        <span aria-hidden className="text-[10px] font-bold text-[var(--primary)]">
           ▸
         </span>
       ) : null}
-      <span className="w-5 shrink-0 rounded-md bg-[var(--surface-soft)] text-center text-xs font-bold text-[var(--ink)]">
+      <span className="tabular-nums w-5 shrink-0 rounded-md bg-[var(--surface-soft)] text-center text-xs font-bold text-[var(--ink)]">
         {score ?? "·"}
       </span>
     </div>
@@ -204,14 +152,14 @@ function MatchNode({ data }: NodeProps<MatchFlowNode>) {
   if (homeMismatch || awayMismatch) {
     footer = {
       text: `Avanzó: ${[homeMismatch, awayMismatch].filter(Boolean).join(" · ")}`,
-      tone: "text-[var(--danger)]",
+      tone: "text-[var(--live)]",
     };
   } else if (hasOfficialScore) {
     footer = {
       text: `Oficial ${official.homeScore}-${official.awayScore}${
         official.advancingTeamName ? ` · ${official.advancingTeamName}` : ""
       }`,
-      tone: "text-[var(--accent)]",
+      tone: "text-[var(--primary)]",
     };
   } else {
     footer = {
@@ -230,8 +178,8 @@ function MatchNode({ data }: NodeProps<MatchFlowNode>) {
     <div
       className={`flex cursor-pointer flex-col gap-1 rounded-2xl border bg-[var(--surface)] px-2.5 py-2 shadow-[0_10px_30px_rgba(6,25,15,0.35)] transition ${
         selected
-          ? "border-[#f0c94a] ring-2 ring-[#f0c94a]"
-          : "border-white/20 hover:border-[var(--accent)]"
+          ? "border-[var(--gold)] ring-2 ring-[var(--gold)]"
+          : "border-white/20 hover:border-[var(--primary)]"
       }`}
       style={{ width: NODE_W, height: NODE_H }}
     >
@@ -241,13 +189,13 @@ function MatchNode({ data }: NodeProps<MatchFlowNode>) {
       <Handle type="source" position={Position.Right} id="sr" isConnectable={false} className="!h-1 !w-1 !border-0 !bg-transparent" />
 
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">
           {match.round === "final" ? "🏆 " : match.round === "third" ? "🥉 " : ""}
           {match.code}
         </span>
         {points != null ? (
           <span
-            className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+            className={`tabular-nums rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
               points >= 2
                 ? "bg-emerald-100 text-emerald-800"
                 : points === 1
@@ -262,7 +210,7 @@ function MatchNode({ data }: NodeProps<MatchFlowNode>) {
             🔒
           </span>
         ) : (
-          <span className="rounded-full bg-[rgba(24,99,62,0.12)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--accent)]">
+          <span className="rounded-full bg-[rgba(0,168,89,0.12)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--primary)]">
             ✏️
           </span>
         )}
@@ -550,7 +498,7 @@ export function BracketFlow({
                 strokeDasharray: "5 5",
               }
             : {
-                stroke: feederPicked ? "#f0c94a" : "rgba(255,255,255,0.32)",
+                stroke: feederPicked ? "#f5b301" : "rgba(255,255,255,0.32)",
                 strokeWidth: feederPicked ? 2.2 : 1.4,
               },
         });

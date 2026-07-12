@@ -5,12 +5,19 @@ type ScoreInputProps = {
   disabled?: boolean;
   onChange: (value: number | null) => void;
   label?: string;
+  className?: string;
 };
 
-export function ScoreInput({ value, disabled, onChange, label }: ScoreInputProps) {
+export function ScoreInput({
+  value,
+  disabled,
+  onChange,
+  label,
+  className = "",
+}: ScoreInputProps) {
   return (
     <input
-      className="h-10 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-center text-sm font-semibold text-[var(--ink)] outline-none transition focus:border-[var(--accent)] disabled:cursor-not-allowed disabled:bg-[var(--surface-soft)]"
+      className={`tabular-nums h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-center text-xl font-bold text-[var(--ink)] outline-none transition focus:border-[var(--primary)] disabled:cursor-not-allowed disabled:bg-[var(--surface-soft)] ${className}`}
       disabled={disabled}
       inputMode="numeric"
       pattern="[0-9]*"

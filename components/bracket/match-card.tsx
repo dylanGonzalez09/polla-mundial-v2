@@ -37,8 +37,8 @@ type MatchCardProps = {
 
 function OfficialOccupant({ name }: { name: string }) {
   return (
-    <div className="ml-3 flex items-center gap-2 rounded-xl border border-dashed border-[var(--danger)] bg-[rgba(176,0,32,0.06)] px-3 py-1.5">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--danger)]">
+    <div className="ml-3 flex items-center gap-2 rounded-xl border border-dashed border-[var(--live)] bg-[rgba(224,16,47,0.06)] px-3 py-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--live)]">
         Avanzó
       </span>
       <span className="truncate text-xs font-semibold text-[var(--ink)]">
@@ -124,7 +124,7 @@ export function MatchCard({
     <Surface className="p-4 sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--accent)]">
+          <div className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--primary)]">
             {match.code}
           </div>
           <div className="mt-1 text-sm font-medium text-[var(--muted-ink)]">
@@ -136,79 +136,60 @@ export function MatchCard({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="space-y-1">
-          <TeamSlot
-            team={homeTeam}
-            selected={pick?.predictedAdvancingTeamId === homeTeam?.id}
-            disabled={readOnly || !canEditTeams}
-            onSelect={
-              homeTeam && onPickWinner
-                ? () => onPickWinner(homeTeam.id)
-                : undefined
-            }
-          />
+          <div className="flex items-center gap-2">
+            <TeamSlot
+              team={homeTeam}
+              selected={pick?.predictedAdvancingTeamId === homeTeam?.id}
+              disabled={readOnly || !canEditTeams}
+              onSelect={
+                homeTeam && onPickWinner
+                  ? () => onPickWinner(homeTeam.id)
+                  : undefined
+              }
+            />
+            <ScoreInput
+              className="w-16 shrink-0"
+              disabled={readOnly || !canEditScores}
+              value={pick?.homeScore ?? null}
+              onChange={(value) => onChangeScore?.("home", value)}
+              label={homeTeam?.name ?? "local"}
+            />
+          </div>
           {officialHomeMismatch ? (
             <OfficialOccupant name={officialResult!.realHomeTeamName!} />
           ) : null}
         </div>
+
         <div className="space-y-1">
-          <TeamSlot
-            team={awayTeam}
-            selected={pick?.predictedAdvancingTeamId === awayTeam?.id}
-            disabled={readOnly || !canEditTeams}
-            onSelect={
-              awayTeam && onPickWinner
-                ? () => onPickWinner(awayTeam.id)
-                : undefined
-            }
-          />
+          <div className="flex items-center gap-2">
+            <TeamSlot
+              team={awayTeam}
+              selected={pick?.predictedAdvancingTeamId === awayTeam?.id}
+              disabled={readOnly || !canEditTeams}
+              onSelect={
+                awayTeam && onPickWinner
+                  ? () => onPickWinner(awayTeam.id)
+                  : undefined
+              }
+            />
+            <ScoreInput
+              className="w-16 shrink-0"
+              disabled={readOnly || !canEditScores}
+              value={pick?.awayScore ?? null}
+              onChange={(value) => onChangeScore?.("away", value)}
+              label={awayTeam?.name ?? "visitante"}
+            />
+          </div>
           {officialAwayMismatch ? (
             <OfficialOccupant name={officialResult!.realAwayTeamName!} />
           ) : null}
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
-        <div className="flex flex-col gap-1">
-          <span className="truncate text-xs font-semibold text-[var(--muted-ink)]">
-            {homeTeam?.name ?? "Local"}
-          </span>
-          {officialHomeMismatch ? (
-            <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--danger)]">
-              Avanzó {officialResult!.realHomeTeamName!}
-            </span>
-          ) : null}
-          <ScoreInput
-            disabled={readOnly || !canEditScores}
-            value={pick?.homeScore ?? null}
-            onChange={(value) => onChangeScore?.("home", value)}
-            label={homeTeam?.name ?? "local"}
-          />
-        </div>
-        <span className="col-span-2 text-center text-sm font-semibold text-[var(--muted-ink)] sm:col-span-1 sm:pb-2">
-          vs
-        </span>
-        <div className="flex flex-col gap-1">
-          <span className="truncate text-xs font-semibold text-[var(--muted-ink)] sm:text-right">
-            {awayTeam?.name ?? "Visitante"}
-          </span>
-          {officialAwayMismatch ? (
-            <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--danger)] sm:text-right">
-              Avanzó {officialResult!.realAwayTeamName!}
-            </span>
-          ) : null}
-          <ScoreInput
-            disabled={readOnly || !canEditScores}
-            value={pick?.awayScore ?? null}
-            onChange={(value) => onChangeScore?.("away", value)}
-            label={awayTeam?.name ?? "visitante"}
-          />
-        </div>
-      </div>
-
       <div
-        className="mt-4 text-xs text-[var(--muted-ink)]"
+        className="mt-3 text-xs text-[var(--muted-ink)]"
         suppressHydrationWarning
       >
         {new Intl.DateTimeFormat("es-CO", {
@@ -219,23 +200,23 @@ export function MatchCard({
       </div>
 
       {hasOfficial ? (
-        <div className="mt-4 rounded-[24px] bg-[var(--surface-soft)] px-3 py-3 sm:px-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <div className="mt-4 rounded-2xl bg-[var(--ink)] px-4 py-3.5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
                 Resultado oficial
               </p>
               {officialTeamsLabel ? (
-                <p className="text-sm font-semibold text-[var(--ink)]">
+                <p className="text-sm font-semibold text-white/90">
                   {officialTeamsLabel}
                 </p>
               ) : null}
-              <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                <span className="rounded-full bg-white px-2.5 py-1 text-[var(--ink)]">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="tabular-nums font-display text-2xl text-[var(--gold)]">
                   {officialResult.homeScore}-{officialResult.awayScore}
                 </span>
                 {officialResult.advancingTeamName ? (
-                  <span className="rounded-full bg-[rgba(24,99,62,0.12)] px-2.5 py-1 text-[var(--accent)]">
+                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white">
                     Avanza {officialResult.advancingTeamName}
                   </span>
                 ) : null}
@@ -243,29 +224,29 @@ export function MatchCard({
             </div>
 
             {points === null ? (
-              <span className="text-xs font-semibold text-[var(--muted-ink)]">
+              <span className="text-xs font-semibold text-white/60">
                 Sin pronostico
               </span>
             ) : points === 4 ? (
-              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
-                Ganador + marcador · +4
+              <span className="rounded-full bg-[var(--gold)] px-2.5 py-1 text-xs font-bold text-[var(--ink)]">
+                🥇 Ganador + marcador · +4
               </span>
             ) : points === 3 ? (
-              <span className="rounded-full bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-800">
+              <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold text-sky-800">
                 {match.round === "r32"
                   ? "Marcador exacto · +3"
                   : "Empate exacto · +3"}
               </span>
             ) : points === 2 ? (
-              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800">
                 Marcador exacto · +2
               </span>
             ) : points === 1 ? (
-              <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
+              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">
                 Ganador acertado · +1
               </span>
             ) : (
-              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">
+              <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-bold text-white/70">
                 Sin aciertos · 0
               </span>
             )}

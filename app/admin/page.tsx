@@ -1,6 +1,6 @@
-import { OfficialResultForm } from "@/components/admin/official-result-form";
+import { AdminMatchBrowser } from "@/components/admin/admin-match-browser";
 import { PhaseWindowForm } from "@/components/admin/phase-window-form";
-import { Surface } from "@/components/ui/card";
+import { PageHero } from "@/components/ui/page-hero";
 import { requireAdmin } from "@/lib/auth/dal";
 import { buildResolvedMatches } from "@/lib/domain/bracket";
 import { getBracketCatalog, getPhaseWindows, getAppSettings } from "@/lib/data/matches";
@@ -31,39 +31,26 @@ export default async function AdminPage() {
     buildResolvedMatches(matches, teams, officialPicks).map((match) => [match.id, match]),
   );
 
+  const matchesWithTeams = matches.map((match) => {
+    const resolved = resolvedById.get(match.id);
+    return {
+      ...match,
+      homeTeam: resolved?.homeTeam ?? null,
+      awayTeam: resolved?.awayTeam ?? null,
+    };
+  });
+
   return (
     <div className="space-y-6">
-      <Surface className="p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
-          Admin
-        </p>
-        <h1 className="mt-3 font-serif text-4xl text-[var(--ink)]">
-          Control de ventanas y resultados
-        </h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-ink)]">
-          Ajusta el deadline inicial, abre o cierra rondas manualmente y registra
-          los resultados oficiales que recalculan el ranking.
-        </p>
-      </Surface>
+      <PageHero
+        eyebrow="Admin"
+        title="Control de ventanas y resultados"
+        subtitle="Ajusta el deadline inicial, abre o cierra rondas manualmente y registra los resultados oficiales que recalculan el ranking."
+      />
 
       <PhaseWindowForm settings={settings} phases={phases} />
 
-      <div className="grid gap-5 xl:grid-cols-2">
-        {matches.map((match) => {
-          const resolved = resolvedById.get(match.id);
-          return (
-            <OfficialResultForm
-              key={match.id}
-              match={{
-                ...match,
-                homeTeam: resolved?.homeTeam ?? null,
-                awayTeam: resolved?.awayTeam ?? null,
-              }}
-              result={results.get(match.id) ?? null}
-            />
-          );
-        })}
-      </div>
+      <AdminMatchBrowser matches={matchesWithTeams} results={results} />
     </div>
   );
 }

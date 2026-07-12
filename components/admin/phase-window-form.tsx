@@ -25,8 +25,8 @@ export function PhaseWindowForm({
 
   return (
     <div className="grid gap-5 xl:grid-cols-2">
-      <Surface className="p-6">
-        <h2 className="font-serif text-2xl text-[var(--ink)]">Ventana inicial</h2>
+      <Surface accent="gold" className="p-6">
+        <h2 className="font-display text-xl text-[var(--ink)]">Ventana inicial</h2>
         <form action={windowAction} className="mt-5 space-y-4">
           <input name="scope" type="hidden" value="initial" />
           <DateTimeField
@@ -71,8 +71,8 @@ export function PhaseWindowForm({
 
       <div className="space-y-5">
         {phases.map((phase) => (
-          <Surface key={phase.round} className="p-6">
-            <h3 className="font-serif text-2xl text-[var(--ink)]">
+          <Surface key={phase.round} accent="info" className="p-6">
+            <h3 className="font-display text-xl text-[var(--ink)]">
               {ROUND_LABELS[phase.round]}
             </h3>
             <p className="mt-1 text-sm text-[var(--muted-ink)]">

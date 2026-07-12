@@ -7,14 +7,14 @@ export default function RegisterPage() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="flex flex-col justify-center gap-6 text-[var(--ink)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[var(--accent)]">
+        <div className="flex flex-col justify-center gap-6 text-white">
+          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-white/80">
             Nuevo jugador
           </p>
-          <h1 className="font-serif text-5xl leading-tight sm:text-6xl">
+          <h1 className="font-display text-4xl uppercase leading-tight sm:text-5xl">
             Tu nombre visible pesa mas que tu correo.
           </h1>
-          <p className="max-w-xl text-lg leading-8 text-[var(--muted-ink)]">
+          <p className="max-w-xl text-lg leading-8 text-white/85">
             El ranking y la vista de jugadores muestran solo tu nombre visible.
             Registra tu cuenta, llena el bracket y congela tu lectura del torneo.
           </p>
@@ -49,7 +49,7 @@ export default function RegisterPage() {
             footer={
               <>
                 Ya tienes cuenta?{" "}
-                <Link className="font-semibold text-[var(--accent)]" href="/login">
+                <Link className="font-semibold text-[var(--primary)]" href="/login">
                   Inicia sesion
                 </Link>
               </>

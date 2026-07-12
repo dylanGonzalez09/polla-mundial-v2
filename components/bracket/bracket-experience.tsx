@@ -213,13 +213,13 @@ export function BracketExperience({
 
   return (
     <div className="space-y-6">
-      <Surface className="p-6 sm:p-8">
+      <Surface accent="primary" className="p-6 sm:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--primary)]">
               Estado del juego
             </p>
-            <h2 className="mt-3 font-serif text-3xl text-[var(--ink)]">
+            <h2 className="font-display mt-3 text-2xl uppercase text-[var(--ink)]">
               {prediction?.isConfirmed ? "Tu cuadro ya esta confirmado" : "Arma tu cuadro"}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted-ink)]">
@@ -259,7 +259,7 @@ export function BracketExperience({
 
       <MapUsageHint />
 
-      <div className="rounded-[32px] bg-[linear-gradient(160deg,#0f5130_0%,#0b2d1b_55%,#0b1621_100%)] p-2 sm:p-4">
+      <div className="pattern-stadium rounded-[32px] p-2 sm:p-4">
         <BracketFlow
           matches={matchesByStage}
           picks={pickMap}
@@ -284,7 +284,7 @@ export function BracketExperience({
       </div>
 
       {!prediction?.isConfirmed ? (
-        <Surface className="p-6" data-tour="confirm">
+        <Surface accent="gold" className="p-6" data-tour="confirm">
           <form
             action={initialAction}
             className="flex flex-col gap-4"
@@ -300,7 +300,7 @@ export function BracketExperience({
               value={serializeInitialPayload(localPicks)}
             />
             <div>
-              <h3 className="font-serif text-2xl text-[var(--ink)]">
+              <h3 className="font-display text-xl text-[var(--ink)]">
                 Confirmar cuadro inicial
               </h3>
               <p className="mt-1 text-sm leading-6 text-[var(--muted-ink)]">
@@ -323,7 +323,7 @@ export function BracketExperience({
                     <span className="font-semibold text-[var(--ink)]">
                       Equipos · {ROUND_LABELS[round]}
                     </span>
-                    <span className={done ? "text-[var(--accent)]" : "text-[var(--danger)]"}>
+                    <span className={done ? "text-[var(--primary)]" : "text-[var(--live)]"}>
                       {done ? "✓ Completo" : `Faltan ${pending}`}
                     </span>
                   </li>
@@ -336,8 +336,8 @@ export function BracketExperience({
                 <span
                   className={
                     initialMissing.missingRound32Scores.length === 0
-                      ? "text-[var(--accent)]"
-                      : "text-[var(--danger)]"
+                      ? "text-[var(--primary)]"
+                      : "text-[var(--live)]"
                   }
                 >
                   {initialMissing.missingRound32Scores.length === 0
@@ -347,7 +347,7 @@ export function BracketExperience({
               </li>
             </ul>
 
-            <SubmitButton disabled={!initialComplete}>
+            <SubmitButton tone="gold" disabled={!initialComplete}>
               {initialComplete
                 ? "Confirmar cuadro inicial"
                 : "Completa el cuadro para confirmar"}
@@ -357,9 +357,9 @@ export function BracketExperience({
       ) : null}
 
       {prediction?.isConfirmed ? (
-        <Surface className="p-6" data-tour="phases">
+        <Surface accent="info" className="p-6" data-tour="phases">
           <div>
-            <h3 className="font-serif text-2xl text-[var(--ink)]">
+            <h3 className="font-display text-xl text-[var(--ink)]">
               Marcadores por fase
             </h3>
             <p className="mt-1 text-sm leading-6 text-[var(--muted-ink)]">
@@ -386,7 +386,7 @@ export function BracketExperience({
               let badgeTone: string;
               if (submitted) {
                 badge = "✅ Enviada";
-                badgeTone = "bg-[rgba(24,99,62,0.12)] text-[var(--accent)]";
+                badgeTone = "bg-[rgba(0,168,89,0.12)] text-[var(--primary)]";
               } else if (!window || window.effectiveStatus === "locked") {
                 badge = "🔒 La abre el admin";
                 badgeTone = "bg-[var(--surface-soft)] text-[var(--muted-ink)]";
@@ -395,7 +395,7 @@ export function BracketExperience({
                 badgeTone = "bg-[var(--surface-soft)] text-[var(--muted-ink)]";
               } else {
                 badge = "✏️ Abierta";
-                badgeTone = "bg-[rgba(24,99,62,0.12)] text-[var(--accent)]";
+                badgeTone = "bg-[rgba(0,168,89,0.12)] text-[var(--primary)]";
               }
 
               const ready = editable && pendingScores === 0;
@@ -411,7 +411,7 @@ export function BracketExperience({
                   className="flex flex-col gap-3 rounded-2xl border border-[var(--line)] p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="font-serif text-xl text-[var(--ink)]">
+                    <span className="font-display text-lg text-[var(--ink)]">
                       {ROUND_LABELS[round]}
                     </span>
                     <span

@@ -1,37 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4efe5;
-  --surface: #fffdf7;
-  --surface-soft: #eef3eb;
-  --ink: #17241c;
-  --muted-ink: #57675b;
-  --line: #d4ddcf;
-  --accent: #18633e;
-  --accent-strong: #10492d;
-  --danger: #ab3042;
+  /* Fondo oscuro tipo transmision — las tarjetas blancas (--surface) flotan
+     sobre esto con contraste garantizado, nunca blanco-sobre-casi-blanco. */
+  --background: #0a1428;
+  --surface: #ffffff;
+  --surface-soft: #f1f2ee;
+  --ink: #111318;
+  --muted-ink: #5a616e;
+  --line: #e3e5e0;
+
+  /* Chrome oscuro (sidebar, bottom tabs, header movil). */
+  --chrome: #0d1830;
+  --chrome-line: rgba(255, 255, 255, 0.1);
+  --on-dark: #ffffff;
+  --on-dark-muted: rgba(255, 255, 255, 0.62);
+
+  --primary: #00a859;
+  --primary-strong: #008144;
+  --live: #e0102f;
+  --info: #0047bb;
+  --gold: #f5b301;
+  --gold-strong: #c98e00;
+  --bronze: #b5651d;
+  --silver: #9aa5b1;
+
+  /* --danger es el nombre semantico para errores/validacion (mismo tono que
+     --live, usado para resultados oficiales) — se mantiene como token propio. */
+  --danger: var(--live);
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--ink);
+  --color-foreground: var(--on-dark);
   --font-sans: var(--font-bricolage);
-  --font-serif: var(--font-source-serif);
+  --font-display: var(--font-archivo-black);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 40%),
-    radial-gradient(circle at bottom right, rgba(24, 99, 62, 0.1), transparent 35%),
-    linear-gradient(180deg, #0d3d24 0%, #102a1b 220px, #f4efe5 220px, #f4efe5 100%);
-}
-
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(245, 179, 1, 0.14), transparent 42%),
+    radial-gradient(circle at 100% 8%, rgba(0, 168, 89, 0.2), transparent 45%),
+    radial-gradient(circle at 55% 100%, rgba(224, 16, 47, 0.14), transparent 45%),
+    var(--background);
   color: var(--ink);
   font-family: var(--font-sans), sans-serif;
 }
@@ -48,5 +63,38 @@ select {
 }
 
 ::selection {
-  background: rgba(24, 99, 62, 0.2);
+  background: rgba(0, 168, 89, 0.2);
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Franja/hero decorativa: tricolor + patrón geométrico sutil. Solo para uso
+   decorativo (heros, sidebar, fondos) — nunca detrás de datos. */
+.pattern-tricolor {
+  background-image:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.06) 0deg 90deg,
+      rgba(255, 255, 255, 0) 90deg 180deg
+    ),
+    linear-gradient(120deg, #e0102f 0%, #0047bb 48%, #00a859 100%);
+  background-size: 26px 26px, 100% 100%;
+}
+
+.pattern-stadium {
+  background-image:
+    repeating-conic-gradient(
+      from 45deg,
+      rgba(255, 255, 255, 0.05) 0deg 60deg,
+      rgba(255, 255, 255, 0) 60deg 120deg
+    ),
+    linear-gradient(160deg, #0b1f4b 0%, #0b3d2e 100%);
+  background-size: 32px 32px, 100% 100%;
 }

@@ -6,6 +6,7 @@ import { recordOfficialResult } from "@/actions/admin";
 import { SubmitButton } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { SelectField, TextField } from "@/components/ui/field";
+import { Flag } from "@/components/ui/flag";
 import { idleActionState } from "@/lib/domain/validation";
 import type { BracketMatchView, OfficialResult } from "@/lib/domain/types";
 
@@ -27,10 +28,12 @@ export function OfficialResultForm({
   return (
     <Surface className="p-5">
       <div className="mb-4">
-        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--primary)]">
+          <Flag code={match.homeTeam?.code} />
           {match.code}
+          <Flag code={match.awayTeam?.code} />
         </div>
-        <h3 className="mt-2 font-serif text-2xl text-[var(--ink)]">
+        <h3 className="font-display mt-2 text-xl text-[var(--ink)]">
           {match.homeTeam?.name ?? "Por definir"} vs {match.awayTeam?.name ?? "Por definir"}
         </h3>
       </div>

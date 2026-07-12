@@ -42,7 +42,7 @@ export function TextField({ label, id, hint, error, className = "", ...props }: 
     <FieldFrame id={id} label={label} hint={hint} error={error}>
       <input
         id={id}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent)] ${className}`}
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       />
     </FieldFrame>
@@ -62,7 +62,7 @@ export function SelectField({
     <FieldFrame id={id} label={label} hint={hint} error={error}>
       <select
         id={id}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent)] ${className}`}
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       >
         {options.map((option) => (
@@ -135,7 +135,7 @@ export function DateTimeField({
         type="datetime-local"
         value={localValue}
         onChange={handleChange}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent)] ${className}`}
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       />
     </FieldFrame>

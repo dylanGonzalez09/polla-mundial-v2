@@ -76,6 +76,20 @@ type Rect = { top: number; left: number; width: number; height: number };
 const PAD = 8;
 const noopSubscribe = () => () => {};
 
+// La sidebar (desktop) y los bottom tabs (movil) comparten los mismos
+// atributos data-tour; solo una de las dos existe visible a la vez segun el
+// breakpoint. querySelector siempre devuelve el primer nodo del DOM sin medir
+// visibilidad, asi que buscamos explicitamente el que este renderizado.
+function queryVisible(selector: string): Element | null {
+  const candidates = document.querySelectorAll(selector);
+  for (const el of candidates) {
+    if ((el as HTMLElement).offsetParent !== null) {
+      return el;
+    }
+  }
+  return candidates[0] ?? null;
+}
+
 function useTourSeen(storageKey: string) {
   return useSyncExternalStore(
     noopSubscribe,
@@ -109,7 +123,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
       return;
     }
 
-    const el = document.querySelector(selector);
+    const el = queryVisible(selector);
     if (!el) {
       setRect(null);
       return;
@@ -124,7 +138,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
       return;
     }
 
-    const el = selector ? document.querySelector(selector) : null;
+    const el = selector ? queryVisible(selector) : null;
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
@@ -247,7 +261,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
       {rect ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute rounded-2xl ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-transparent transition-all duration-200"
+          className="pointer-events-none absolute rounded-2xl ring-2 ring-[var(--primary)] ring-offset-2 ring-offset-transparent transition-all duration-200"
           style={{
             top: rect.top - PAD,
             left: rect.left - PAD,
@@ -269,7 +283,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
       >
         <div className="flex max-h-[calc(100vh-32px)] flex-col gap-4 overflow-y-auto p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--primary)]">
               {current.eyebrow}
             </p>
             <button
@@ -284,7 +298,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
           <div className="flex flex-col gap-2">
             <h2
               id="onboarding-title"
-              className="font-serif text-2xl leading-tight text-[var(--ink)]"
+              className="font-display text-xl leading-tight text-[var(--ink)]"
             >
               {current.title}
             </h2>
@@ -297,7 +311,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
                     key={item}
                     className="flex gap-2 rounded-2xl bg-[var(--surface-soft)] px-3 py-2 text-sm leading-6 text-[var(--ink)]"
                   >
-                    <span aria-hidden className="text-[var(--accent)]">
+                    <span aria-hidden className="text-[var(--primary)]">
                       *
                     </span>
                     <span>{item}</span>
@@ -313,7 +327,7 @@ export function OnboardingTour({ userId }: { userId: string }) {
                 <span
                   key={index}
                   className={`h-2 rounded-full transition-all ${
-                    index === step ? "w-5 bg-[var(--accent)]" : "w-2 bg-[var(--line)]"
+                    index === step ? "w-5 bg-[var(--primary)]" : "w-2 bg-[var(--line)]"
                   }`}
                 />
               ))}

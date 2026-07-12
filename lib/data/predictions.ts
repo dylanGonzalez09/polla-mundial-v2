@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { verifySession } from "@/lib/auth/dal";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
@@ -8,6 +10,18 @@ import type {
   PredictionPick,
   RoundKey,
 } from "@/lib/domain/types";
+
+export const getCurrentUserTotalPoints = cache(async (): Promise<number> => {
+  const user = await verifySession();
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase
+    .from("predictions")
+    .select("total_points")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  return data?.total_points ?? 0;
+});
 
 function normalizePrediction(row: Record<string, unknown>): Prediction {
   return {

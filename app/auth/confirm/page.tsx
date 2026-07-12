@@ -13,10 +13,10 @@ export default async function ConfirmRecoveryPage({
     <div className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10">
       <Surface className="w-full p-8 sm:p-10">
         <div className="mb-6 flex flex-col gap-3">
-          <div className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
-            Polla Mundial
+          <div className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--primary)]">
+            Polla Mundial 26
           </div>
-          <h1 className="font-serif text-3xl leading-tight text-[var(--ink)]">
+          <h1 className="font-display text-2xl leading-tight text-[var(--ink)]">
             Confirma tu solicitud
           </h1>
           <p className="text-sm leading-6 text-[var(--muted-ink)]">

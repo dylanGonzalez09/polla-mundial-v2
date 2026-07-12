@@ -1,5 +1,6 @@
 import { PeerBrowser } from "@/components/players/peer-browser";
 import { Surface } from "@/components/ui/card";
+import { PageHero } from "@/components/ui/page-hero";
 import { getBracketCatalog } from "@/lib/data/matches";
 import type { RoundKey } from "@/lib/domain/types";
 import { getCurrentUserPrediction } from "@/lib/data/predictions";
@@ -15,13 +16,15 @@ export default async function PlayersPage() {
 
   if (!predictionBundle.prediction?.isConfirmed) {
     return (
-      <Surface className="p-6">
-        <h1 className="font-serif text-3xl text-[var(--ink)]">Jugadores</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted-ink)]">
-          Confirma primero tu cuadro inicial para desbloquear la vista de los
-          demas participantes.
-        </p>
-      </Surface>
+      <div className="space-y-6">
+        <PageHero eyebrow="Mundial 2026" title="Jugadores" />
+        <Surface className="p-6">
+          <p className="max-w-2xl text-sm leading-6 text-[var(--muted-ink)]">
+            Confirma primero tu cuadro inicial para desbloquear la vista de los
+            demas participantes.
+          </p>
+        </Surface>
+      </div>
     );
   }
 
@@ -103,18 +106,11 @@ export default async function PlayersPage() {
 
   return (
     <div className="space-y-6">
-      <Surface className="p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
-          Visibilidad incremental
-        </p>
-        <h1 className="mt-3 font-serif text-4xl text-[var(--ink)]">
-          Cuadros de otros jugadores
-        </h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-ink)]">
-          Solo ves lo que ya desbloqueaste con tus propios envios. Los peers que
-          todavia no enviaron una fase quedan sin marcadores visibles.
-        </p>
-      </Surface>
+      <PageHero
+        eyebrow="Visibilidad incremental"
+        title="Jugadores"
+        subtitle="Solo ves lo que ya desbloqueaste con tus propios envios. Los peers que todavia no enviaron una fase quedan sin marcadores visibles."
+      />
 
       <PeerBrowser
         peers={[...peerMap.values()].map((peer) => ({

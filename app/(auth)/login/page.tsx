@@ -7,14 +7,14 @@ export default function LoginPage() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="flex flex-col justify-center gap-6 text-[var(--ink)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[var(--accent)]">
+        <div className="flex flex-col justify-center gap-6 text-white">
+          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-white/80">
             Bracket Prediction Pool
           </p>
-          <h1 className="font-serif text-5xl leading-tight sm:text-6xl">
+          <h1 className="font-display text-4xl uppercase leading-tight sm:text-5xl">
             El cuadro se gana antes del primer pitazo.
           </h1>
-          <p className="max-w-xl text-lg leading-8 text-[var(--muted-ink)]">
+          <p className="max-w-xl text-lg leading-8 text-white/85">
             Confirma tu llave completa, desbloquea rondas a medida que avanza el
             torneo y compara tus picks con el resto del grupo.
           </p>
@@ -43,12 +43,12 @@ export default function LoginPage() {
             footer={
               <>
                 No tienes cuenta?{" "}
-                <Link className="font-semibold text-[var(--accent)]" href="/register">
+                <Link className="font-semibold text-[var(--primary)]" href="/register">
                   Registrate
                 </Link>
                 <br />
                 <Link
-                  className="font-semibold text-[var(--accent)]"
+                  className="font-semibold text-[var(--primary)]"
                   href="/forgot-password"
                 >
                   Olvidaste tu contrasena?
