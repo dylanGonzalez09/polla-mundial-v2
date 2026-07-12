@@ -20,7 +20,7 @@ export function Flag({ code, className = "" }: FlagProps) {
     return (
       <span
         aria-hidden
-        className={`inline-flex items-center justify-center rounded-full bg-[var(--surface-soft)] text-[8px] font-bold text-[var(--muted-ink)] ${className}`}
+        className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--surface-soft)] text-[8px]! font-bold leading-none text-[var(--muted-ink)] ${className}`}
       >
         —
       </span>
@@ -30,7 +30,7 @@ export function Flag({ code, className = "" }: FlagProps) {
   return (
     <span
       aria-hidden
-      className={`inline-flex items-center justify-center rounded-full bg-[var(--surface-soft)] text-[8px] font-bold text-[var(--ink)] ${className}`}
+      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--surface-soft)] text-[8px]! font-bold leading-none text-[var(--ink)] ${className}`}
     >
       {code.slice(0, 3)}
     </span>

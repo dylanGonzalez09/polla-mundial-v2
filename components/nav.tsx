@@ -38,8 +38,8 @@ export function SidebarNav({ isAdmin }: { isAdmin: boolean }) {
             href={item.href}
             className={`flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold transition ${
               active
-                ? "bg-[var(--info)] text-white"
-                : "text-[var(--on-dark-muted)] hover:bg-white/8 hover:text-white"
+                ? "bg-[#1769e0] !text-white shadow-[0_8px_24px_rgba(23,105,224,0.28)]"
+                : "!text-[#c8d2e3] hover:bg-white/8 hover:!text-white"
             }`}
           >
             <span aria-hidden className="text-base leading-none">
@@ -67,7 +67,7 @@ export function BottomTabsNav({ isAdmin }: { isAdmin: boolean }) {
             data-tour={item.tour}
             href={item.href}
             className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition ${
-              active ? "text-[var(--gold)]" : "text-[var(--on-dark-muted)]"
+              active ? "!text-[#ffd45a]" : "!text-[#c8d2e3]"
             }`}
           >
             <span aria-hidden className="text-lg leading-none">

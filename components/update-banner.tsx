@@ -46,13 +46,13 @@ export function UpdateBanner() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--primary)] bg-amber-50 px-5 py-3 text-sm text-[var(--ink)]">
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--primary)] bg-amber-50 px-5 py-3 text-sm text-[var(--chip-active)]">
       <p className="font-medium leading-5">{LATEST_UPDATE.text}</p>
       <button
         type="button"
         onClick={dismiss}
         aria-label="Cerrar aviso"
-        className="shrink-0 rounded-full px-2 py-1 text-lg leading-none text-[var(--muted-ink)] transition hover:text-[var(--ink)]"
+        className="shrink-0 rounded-full px-2 py-1 text-lg leading-none text-[var(--chip-active)]/60 transition hover:text-[var(--chip-active)]"
       >
         ×
       </button>

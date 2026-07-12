@@ -1,8 +1,9 @@
+import type { PredictionCorrectionMatch } from "@/components/admin/prediction-correction-form";
 import {
-  PredictionCorrectionForm,
-  type PredictionCorrectionMatch,
-} from "@/components/admin/prediction-correction-form";
-import { Surface } from "@/components/ui/card";
+  PredictionCorrectionBrowser,
+  type CorrectionPlayer,
+} from "@/components/admin/prediction-correction-browser";
+import { PageHero } from "@/components/ui/page-hero";
 import { requireAdmin } from "@/lib/auth/dal";
 import { getBracketCatalog } from "@/lib/data/matches";
 import { getAdminPredictionCorrections } from "@/lib/data/predictions";
@@ -15,7 +16,7 @@ import type {
   TournamentMatch,
 } from "@/lib/domain/types";
 
-type CorrectionPlayer = {
+type PlayerRows = {
   userId: string;
   displayName: string;
   predictionId: string;
@@ -25,7 +26,7 @@ type CorrectionPlayer = {
 };
 
 function groupByPlayer(rows: AdminPredictionCorrectionRow[]) {
-  const players = new Map<string, CorrectionPlayer>();
+  const players = new Map<string, PlayerRows>();
 
   for (const row of rows) {
     const existing = players.get(row.userId);
@@ -48,7 +49,7 @@ function groupByPlayer(rows: AdminPredictionCorrectionRow[]) {
 }
 
 function buildCorrectionMatches(
-  player: CorrectionPlayer,
+  player: PlayerRows,
   matches: TournamentMatch[],
   teams: Team[],
 ): PredictionCorrectionMatch[] {
@@ -83,6 +84,7 @@ function buildCorrectionMatches(
     return {
       predictionId: player.predictionId,
       matchId: row.matchId,
+      round: resolved?.round ?? "r32",
       code: resolved?.code ?? `Partido ${row.matchId}`,
       roundLabel: resolved ? ROUND_LABELS[resolved.round] : "Ronda",
       homeTeamName: resolved?.homeTeam?.name ?? "Por definir",
@@ -103,72 +105,24 @@ export default async function AdminCorreccionesPage() {
     getBracketCatalog(),
     getAdminPredictionCorrections(),
   ]);
-  const players = groupByPlayer(rows);
+
+  const players: CorrectionPlayer[] = groupByPlayer(rows).map((player) => ({
+    userId: player.userId,
+    displayName: player.displayName,
+    isConfirmed: player.isConfirmed,
+    totalPoints: player.totalPoints,
+    matches: buildCorrectionMatches(player, matches, teams),
+  }));
 
   return (
     <div className="space-y-6">
-      <Surface className="p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
-          Correcciones
-        </p>
-        <h1 className="mt-3 font-serif text-4xl text-[var(--ink)]">
-          Ajustar resultados de jugadores
-        </h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-ink)]">
-          Cambia manualmente el marcador o el equipo que avanza en un pick de jugador.
-          Al guardar, la matriz de puntuacion se recalcula desde la base de datos.
-        </p>
-      </Surface>
+      <PageHero
+        eyebrow="Correcciones"
+        title="Ajustar resultados de jugadores"
+        subtitle="Cambia manualmente el marcador o el equipo que avanza en un pick de jugador. Al guardar, la matriz de puntuacion se recalcula desde la base de datos."
+      />
 
-      {players.length === 0 ? (
-        <Surface className="p-6">
-          <p className="text-sm text-[var(--muted-ink)]">
-            No hay predicciones de jugadores para corregir.
-          </p>
-        </Surface>
-      ) : null}
-
-      {players.map((player) => {
-        const correctionMatches = buildCorrectionMatches(player, matches, teams);
-
-        return (
-          <section key={player.userId} className="space-y-5">
-            <Surface className="p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
-                    Jugador
-                  </p>
-                  <h2 className="mt-2 font-serif text-3xl text-[var(--ink)]">
-                    {player.displayName}
-                  </h2>
-                  <p className="mt-1 text-sm text-[var(--muted-ink)]">
-                    Estado: {player.isConfirmed ? "confirmado" : "sin confirmar"}
-                  </p>
-                </div>
-                <div className="rounded-3xl border border-[var(--line)] bg-white px-5 py-3 text-right">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted-ink)]">
-                    Total
-                  </p>
-                  <p className="font-serif text-3xl text-[var(--ink)]">
-                    {player.totalPoints} pts
-                  </p>
-                </div>
-              </div>
-            </Surface>
-
-            <div className="grid gap-5 xl:grid-cols-2">
-              {correctionMatches.map((match) => (
-                <PredictionCorrectionForm
-                  key={`${player.predictionId}-${match.matchId}`}
-                  playerName={player.displayName}
-                  match={match}
-                />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      <PredictionCorrectionBrowser players={players} />
     </div>
   );
 }

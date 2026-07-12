@@ -17,6 +17,7 @@ export function Surface({
   children,
   className = "",
   accent,
+  style,
   ...rest
 }: PropsWithChildren<
   { className?: string; accent?: SurfaceAccent } & HTMLAttributes<HTMLDivElement>
@@ -25,7 +26,8 @@ export function Surface({
 
   return (
     <div
-      className={`rounded-[20px] border border-[var(--line)] bg-[var(--surface)] ${shadowClass} ${className}`}
+      className={`rounded-[20px] border border-white/10 bg-[#101f31] text-[#f2f5fa] ${shadowClass} ${className}`}
+      style={{ backgroundColor: "#101f31", color: "#f2f5fa", ...style }}
       {...rest}
     >
       {children}

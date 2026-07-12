@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
 type BaseFieldProps = {
@@ -42,7 +42,7 @@ export function TextField({ label, id, hint, error, className = "", ...props }: 
     <FieldFrame id={id} label={label} hint={hint} error={error}>
       <input
         id={id}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-[var(--surface-soft)] px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       />
     </FieldFrame>
@@ -62,7 +62,7 @@ export function SelectField({
     <FieldFrame id={id} label={label} hint={hint} error={error}>
       <select
         id={id}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-[var(--surface-soft)] px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       >
         {options.map((option) => (
@@ -110,15 +110,10 @@ export function DateTimeField({
 }: DateTimeFieldProps) {
   // Se inicializa vacío y se completa tras montar para evitar mismatch de
   // hidratación (la conversión depende de la zona horaria del navegador).
-  const [localValue, setLocalValue] = useState("");
+  const [localValue, setLocalValue] = useState(() => toLocalInputValue(utcValue));
   // Hidden input guarda siempre el ISO en UTC para que el server no tenga que
   // conocer la zona horaria del usuario.
-  const [hiddenUtc, setHiddenUtc] = useState("");
-
-  useEffect(() => {
-    setLocalValue(toLocalInputValue(utcValue));
-    setHiddenUtc(utcValue ?? "");
-  }, [utcValue]);
+  const [hiddenUtc, setHiddenUtc] = useState(() => utcValue ?? "");
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const local = event.target.value;
@@ -135,7 +130,8 @@ export function DateTimeField({
         type="datetime-local"
         value={localValue}
         onChange={handleChange}
-        className={`h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
+        suppressHydrationWarning
+        className={`h-11 rounded-2xl border border-[var(--line)] bg-[var(--surface-soft)] px-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--primary)] ${className}`}
         {...props}
       />
     </FieldFrame>

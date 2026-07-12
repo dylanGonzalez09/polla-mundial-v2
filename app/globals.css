@@ -1,29 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  /* Fondo oscuro tipo transmision — las tarjetas blancas (--surface) flotan
-     sobre esto con contraste garantizado, nunca blanco-sobre-casi-blanco. */
-  --background: #0a1428;
-  --surface: #ffffff;
-  --surface-soft: #f1f2ee;
-  --ink: #111318;
-  --muted-ink: #5a616e;
-  --line: #e3e5e0;
+  /* Tema oscuro real: el fondo de pagina y las tarjetas son ambos oscuros,
+     con las tarjetas un tono mas claras para dar elevacion. El texto es claro
+     en todas partes (--ink/--muted-ink ya NO son oscuros). */
+  --background: #0a1420;
+  --surface: #101c30;
+  --surface-soft: #182640;
+  --ink: #f2f5fa;
+  --muted-ink: #a6b0c4;
+  --line: rgba(255, 255, 255, 0.14);
 
-  /* Chrome oscuro (sidebar, bottom tabs, header movil). */
-  --chrome: #0d1830;
+  /* Chip fijo siempre-oscuro, para pills "activas" que necesitan texto claro
+     encima sin depender de --ink (que ahora es claro). */
+  --chip-active: #060c18;
+
+  /* Chrome (sidebar, bottom tabs, header movil) — mismo tono que --surface,
+     un poco mas oscuro para distinguir la navegacion fija del contenido. */
+  --chrome: #0c1728;
   --chrome-line: rgba(255, 255, 255, 0.1);
-  --on-dark: #ffffff;
-  --on-dark-muted: rgba(255, 255, 255, 0.62);
+  --on-dark: var(--ink);
+  --on-dark-muted: var(--muted-ink);
 
-  --primary: #00a859;
-  --primary-strong: #008144;
-  --live: #e0102f;
-  --info: #0047bb;
+  --primary: #00c46a;
+  --primary-strong: #00a859;
+  --live: #ff3b52;
+  --info: #3d8bff;
   --gold: #f5b301;
-  --gold-strong: #c98e00;
-  --bronze: #b5651d;
-  --silver: #9aa5b1;
+  --gold-strong: #ffc933;
+  --bronze: #d3812f;
+  --silver: #b7c0cc;
 
   /* --danger es el nombre semantico para errores/validacion (mismo tono que
      --live, usado para resultados oficiales) — se mantiene como token propio. */
@@ -32,38 +38,40 @@
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--on-dark);
+  --color-foreground: var(--ink);
   --font-sans: var(--font-bricolage);
   --font-display: var(--font-archivo-black);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(245, 179, 1, 0.14), transparent 42%),
-    radial-gradient(circle at 100% 8%, rgba(0, 168, 89, 0.2), transparent 45%),
-    radial-gradient(circle at 55% 100%, rgba(224, 16, 47, 0.14), transparent 45%),
-    var(--background);
-  color: var(--ink);
-  font-family: var(--font-sans), sans-serif;
-}
+  body {
+    /* Fondo solido de un solo tono — sin mezclas de colores ni patrones que
+       se repitan visualmente. */
+    min-height: 100vh;
+    background-color: #081722;
+    background-image: none;
+    color: var(--ink);
+    font-family: var(--font-sans), sans-serif;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-input,
-button,
-select {
-  font: inherit;
-}
+  input,
+  button,
+  select {
+    font: inherit;
+  }
 
-::selection {
-  background: rgba(0, 168, 89, 0.2);
+  ::selection {
+    background: rgba(0, 196, 106, 0.25);
+  }
 }
 
 .font-display {
@@ -95,6 +103,6 @@ select {
       rgba(255, 255, 255, 0.05) 0deg 60deg,
       rgba(255, 255, 255, 0) 60deg 120deg
     ),
-    linear-gradient(160deg, #0b1f4b 0%, #0b3d2e 100%);
+    linear-gradient(160deg, #123252 0%, #0b2232 100%);
   background-size: 32px 32px, 100% 100%;
 }

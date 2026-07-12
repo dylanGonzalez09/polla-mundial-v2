@@ -121,7 +121,7 @@ export function MatchCard({
       : null;
 
   return (
-    <Surface className="p-4 sm:p-5">
+    <Surface className="min-w-0 p-3 sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--primary)]">
@@ -138,7 +138,7 @@ export function MatchCard({
 
       <div className="space-y-2">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <TeamSlot
               team={homeTeam}
               selected={pick?.predictedAdvancingTeamId === homeTeam?.id}
@@ -150,7 +150,7 @@ export function MatchCard({
               }
             />
             <ScoreInput
-              className="w-16 shrink-0"
+              className="w-12 shrink-0 sm:w-16"
               disabled={readOnly || !canEditScores}
               value={pick?.homeScore ?? null}
               onChange={(value) => onChangeScore?.("home", value)}
@@ -163,7 +163,7 @@ export function MatchCard({
         </div>
 
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <TeamSlot
               team={awayTeam}
               selected={pick?.predictedAdvancingTeamId === awayTeam?.id}
@@ -175,7 +175,7 @@ export function MatchCard({
               }
             />
             <ScoreInput
-              className="w-16 shrink-0"
+              className="w-12 shrink-0 sm:w-16"
               disabled={readOnly || !canEditScores}
               value={pick?.awayScore ?? null}
               onChange={(value) => onChangeScore?.("away", value)}
@@ -200,7 +200,7 @@ export function MatchCard({
       </div>
 
       {hasOfficial ? (
-        <div className="mt-4 rounded-2xl bg-[var(--ink)] px-4 py-3.5">
+        <div className="mt-4 rounded-2xl bg-[var(--chip-active)] px-4 py-3.5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
@@ -228,7 +228,7 @@ export function MatchCard({
                 Sin pronostico
               </span>
             ) : points === 4 ? (
-              <span className="rounded-full bg-[var(--gold)] px-2.5 py-1 text-xs font-bold text-[var(--ink)]">
+              <span className="rounded-full bg-[var(--gold)] px-2.5 py-1 text-xs font-bold text-[var(--chip-active)]">
                 🥇 Ganador + marcador · +4
               </span>
             ) : points === 3 ? (

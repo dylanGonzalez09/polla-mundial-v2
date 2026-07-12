@@ -1,6 +1,7 @@
 import { PeerBrowser } from "@/components/players/peer-browser";
 import { Surface } from "@/components/ui/card";
 import { PageHero } from "@/components/ui/page-hero";
+import { getCurrentProfile } from "@/lib/auth/dal";
 import { getBracketCatalog } from "@/lib/data/matches";
 import type { RoundKey } from "@/lib/domain/types";
 import { getCurrentUserPrediction } from "@/lib/data/predictions";
@@ -8,10 +9,11 @@ import { getPeerInitial, getPeerRoundScores } from "@/lib/data/peers";
 import { getOfficialResults } from "@/lib/data/results";
 
 export default async function PlayersPage() {
-  const [{ matches, teams }, predictionBundle, officialResults] = await Promise.all([
+  const [{ matches, teams }, predictionBundle, officialResults, profile] = await Promise.all([
     getBracketCatalog(),
     getCurrentUserPrediction(),
     getOfficialResults(),
+    getCurrentProfile(),
   ]);
 
   if (!predictionBundle.prediction?.isConfirmed) {
@@ -113,14 +115,29 @@ export default async function PlayersPage() {
       />
 
       <PeerBrowser
-        peers={[...peerMap.values()].map((peer) => ({
-          userId: peer.userId,
-          displayName: peer.displayName,
-          hasInitial: peer.hasInitial,
-          totalPoints: peer.totalPoints,
-          phaseStatus: peer.phaseStatus,
-          picks: [...peer.picks.values()],
-        }))}
+        peers={[
+          {
+            userId: profile.id,
+            displayName: `${profile.displayName} (Tu)`,
+            hasInitial: true,
+            totalPoints: predictionBundle.prediction?.totalPoints ?? 0,
+            phaseStatus: Object.fromEntries(
+              unlockedRounds.map((round) => [
+                round,
+                round === "r32" || predictionBundle.submissions.some((s) => s.round === round),
+              ]),
+            ) as Partial<Record<RoundKey, boolean>>,
+            picks: predictionBundle.picks,
+          },
+          ...[...peerMap.values()].map((peer) => ({
+            userId: peer.userId,
+            displayName: peer.displayName,
+            hasInitial: peer.hasInitial,
+            totalPoints: peer.totalPoints,
+            phaseStatus: peer.phaseStatus,
+            picks: [...peer.picks.values()],
+          })),
+        ]}
         matches={matches.map((match) => ({
           ...match,
           homeTeam: teams.find((team) => team.id === match.homeTeamId) ?? null,

@@ -7,10 +7,12 @@ import { SubmitButton } from "@/components/ui/button";
 import { Surface } from "@/components/ui/card";
 import { SelectField, TextField } from "@/components/ui/field";
 import { idleActionState } from "@/lib/domain/validation";
+import type { RoundKey } from "@/lib/domain/types";
 
 export type PredictionCorrectionMatch = {
   predictionId: string;
   matchId: number;
+  round: RoundKey;
   code: string;
   roundLabel: string;
   homeTeamName: string;
@@ -32,20 +34,20 @@ export function PredictionCorrectionForm({
   const [state, formAction] = useActionState(correctPredictionPick, idleActionState);
 
   return (
-    <Surface className="p-5">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+    <Surface accent="live" className="p-4">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+          <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--live)]">
             {match.roundLabel} / {match.code}
           </div>
-          <h3 className="mt-2 font-serif text-2xl text-[var(--ink)]">
+          <h3 className="font-display mt-1 text-lg text-[var(--ink)]">
             {match.homeTeamName} vs {match.awayTeamName}
           </h3>
-          <p className="mt-1 text-sm text-[var(--muted-ink)]">
+          <p className="mt-1 text-xs text-[var(--muted-ink)]">
             Correccion para {playerName}
           </p>
         </div>
-        <span className="rounded-full border border-[var(--line)] bg-white px-3 py-1 text-sm font-semibold text-[var(--ink)]">
+        <span className="tabular-nums shrink-0 rounded-full border border-[var(--line)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--ink)]">
           {match.points} pts
         </span>
       </div>
@@ -53,7 +55,7 @@ export function PredictionCorrectionForm({
       <form
         key={`${match.homeScore ?? ""}-${match.awayScore ?? ""}-${match.predictedAdvancingTeamId ?? ""}`}
         action={formAction}
-        className="grid gap-4"
+        className="grid gap-3"
       >
         <input name="predictionId" type="hidden" value={match.predictionId} />
         <input name="matchId" type="hidden" value={match.matchId} />
@@ -92,14 +94,13 @@ export function PredictionCorrectionForm({
           ]}
         />
         {state.message ? (
-          <p
-            className={`text-sm ${state.ok ? "text-[var(--accent)]" : "text-[var(--danger)]"
-              }`}
-          >
+          <p className={`text-sm ${state.ok ? "text-[var(--primary)]" : "text-[var(--danger)]"}`}>
             {state.message}
           </p>
         ) : null}
-        <SubmitButton>Guardar correccion</SubmitButton>
+        <SubmitButton tone="danger" size="sm">
+          Guardar correccion
+        </SubmitButton>
       </form>
     </Surface>
   );

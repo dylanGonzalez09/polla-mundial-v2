@@ -104,13 +104,18 @@ export function RankingBoard({
 }) {
   const groups = groupByPoints(rows);
   const podiumGroups = groups.slice(0, 3);
+  const restGroups = groups.slice(3);
   const isMe = (name: string) => name === currentUserDisplayName;
 
-  const tableRows = groups
-    .flatMap((group) =>
-      group.players.map((name) => ({ name, points: group.points, emoji: group.emoji })),
-    )
-    .map((row, index) => ({ ...row, position: index + 1 }));
+  const tableRows = restGroups
+    .flatMap((group, groupIndex) =>
+      group.players.map((name) => ({
+        name,
+        points: group.points,
+        emoji: group.emoji,
+        position: groupIndex + 4,
+      })),
+    );
 
   return (
     <div className="space-y-6">
@@ -129,15 +134,16 @@ export function RankingBoard({
         </Surface>
       ) : null}
 
+      {tableRows.length > 0 ? (
       <Surface accent="primary" className="overflow-hidden">
         <div className="divide-y divide-[var(--line)]">
           {tableRows.map((row) => {
             const league = getLeague(row.points);
             return (
               <div
-                key={row.name}
+                key={`${row.position}-${row.name}`}
                 className={`flex items-center justify-between gap-4 px-6 py-4 sm:px-8 ${
-                  isMe(row.name) ? "bg-[rgba(0,71,187,0.06)]" : ""
+                  isMe(row.name) ? "bg-[rgba(61,139,255,0.14)]" : ""
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -174,6 +180,7 @@ export function RankingBoard({
           })}
         </div>
       </Surface>
+      ) : null}
     </div>
   );
 }

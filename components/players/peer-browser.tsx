@@ -8,7 +8,7 @@ import { Surface } from "@/components/ui/card";
 import { Flag } from "@/components/ui/flag";
 import { LeagueBadge } from "@/components/ui/league-badge";
 import { buildResolvedMatches, matchesByRound } from "@/lib/domain/bracket";
-import { getLeague } from "@/lib/domain/leagues";
+import { getLeague, type LeagueTier } from "@/lib/domain/leagues";
 import { ROUND_LABELS, ROUND_ORDER } from "@/lib/domain/rounds";
 import { scoreMatch } from "@/lib/domain/scoring";
 import type {
@@ -28,6 +28,54 @@ type Peer = {
   picks: PredictionPick[];
 };
 
+// Fondo del banner de jugador tenido con el color de su liga, para que el
+// escudo no sea el unico indicio de rango.
+const LEAGUE_BANNER_CLASS: Record<LeagueTier, string> = {
+  bronze:
+    "border-[#d3812f] bg-[linear-gradient(115deg,rgba(211,129,47,0.22),transparent_56%)]",
+  silver:
+    "border-[#b7c0cc] bg-[linear-gradient(115deg,rgba(183,192,204,0.2),transparent_56%)]",
+  gold: "border-[#f5b301] bg-[linear-gradient(115deg,rgba(245,179,1,0.24),transparent_56%)]",
+  diamond:
+    "border-[#54c8ff] bg-[linear-gradient(115deg,rgba(61,139,255,0.25),transparent_56%)]",
+  obsidian:
+    "border-[#c9a6ff] bg-[linear-gradient(115deg,rgba(74,63,107,0.35),rgba(201,166,255,0.14)_48%,transparent_76%)]",
+};
+
+const LEAGUE_CHIP_ACTIVE_CLASS: Record<LeagueTier, string> = {
+  bronze: "bg-[var(--bronze)] text-white",
+  silver: "bg-[var(--silver)] text-[var(--chip-active)]",
+  gold: "bg-[var(--gold)] text-[var(--chip-active)]",
+  diamond: "bg-[var(--info)] text-white",
+  obsidian: "bg-[linear-gradient(120deg,#4a3f6b,#0a0812)] text-white",
+};
+
+// Marco por liga: estilo de borde + resplandor propio, para que el banner se
+// vea distinto por rango y no solo cambie de color.
+const LEAGUE_FRAME_CLASS: Record<LeagueTier, string> = {
+  bronze: "border-solid shadow-[0_22px_55px_rgba(211,129,47,0.16)]",
+  silver: "border-solid shadow-[0_22px_55px_rgba(183,192,204,0.15)]",
+  gold: "border-solid shadow-[0_20px_45px_rgba(245,179,1,0.28)]",
+  diamond: "border-solid shadow-[0_20px_45px_rgba(61,139,255,0.24)]",
+  obsidian: "border-solid shadow-[0_24px_55px_rgba(201,166,255,0.3)]",
+};
+
+const LEAGUE_ORNAMENT: Record<LeagueTier, string> = {
+  bronze: "◆",
+  silver: "✦",
+  gold: "♛",
+  diamond: "✧",
+  obsidian: "★",
+};
+
+const LEAGUE_RIBBON_CLASS: Record<LeagueTier, string> = {
+  bronze: "bg-[var(--bronze)] text-white",
+  silver: "bg-[var(--silver)] text-[var(--chip-active)]",
+  gold: "bg-[var(--gold)] text-[var(--chip-active)]",
+  diamond: "bg-[var(--info)] text-white",
+  obsidian: "bg-[linear-gradient(120deg,#4a3f6b,#0a0812)] text-white",
+};
+
 export function PeerBrowser({
   peers,
   matches,
@@ -44,6 +92,7 @@ export function PeerBrowser({
   const [activePeerId, setActivePeerId] = useState(peers[0]?.userId ?? "");
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const activePeer = peers.find((peer) => peer.userId === activePeerId) ?? null;
+  const activeLeague = activePeer ? getLeague(activePeer.totalPoints) : null;
   const pickMap = useMemo(
     () => new Map((activePeer?.picks ?? []).map((pick) => [pick.matchId, pick])),
     [activePeer],
@@ -225,10 +274,15 @@ export function PeerBrowser({
 
   return (
     <div className="space-y-6">
-      <Surface className="p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--primary)]">
-          Filtrar por partido
-        </p>
+      <Surface accent="info" className="p-6">
+        <div className="flex items-center gap-2">
+          <span aria-hidden className="text-lg leading-none">
+            🔎
+          </span>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--info)]">
+            Filtrar por partido
+          </p>
+        </div>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted-ink)]">
           Elige un cruce especifico (pais vs pais) para ver de un vistazo que
           pronostico cada jugador en ese partido, sin tener que abrir cuadro por
@@ -236,7 +290,7 @@ export function PeerBrowser({
         </p>
         <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <select
-            className="w-full min-w-0 max-w-full truncate rounded-full border border-[var(--line)] bg-[var(--surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--ink)] sm:max-w-sm"
+            className="w-full min-w-0 max-w-full truncate rounded-full border-2 border-[var(--info)]/25 bg-[var(--surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--ink)] sm:max-w-sm"
             value={selectedMatchId ?? ""}
             onChange={(event) =>
               setSelectedMatchId(
@@ -267,7 +321,7 @@ export function PeerBrowser({
       </Surface>
 
       {selectedMatch ? (
-        <Surface className="overflow-hidden">
+        <Surface accent="info" className="overflow-hidden">
           <div className="border-b border-[var(--line)] px-6 py-4 sm:px-8">
             <h2 className="font-display text-xl text-[var(--ink)]">
               {matchOptionsByRound
@@ -372,41 +426,82 @@ export function PeerBrowser({
         </Surface>
       ) : (
         <>
-          <Surface className="p-6">
+          <Surface accent="primary" className="p-6">
             <div className="flex flex-wrap gap-2">
-              {peers.map((peer) => (
-                <button
-                  key={peer.userId}
-                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    peer.userId === activePeerId
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-soft)] text-[var(--muted-ink)]"
-                  }`}
-                  type="button"
-                  onClick={() => setActivePeerId(peer.userId)}
-                >
-                  <LeagueBadge tier={getLeague(peer.totalPoints).tier} size="sm" />
-                  {peer.displayName}
-                </button>
-              ))}
+              {peers.map((peer) => {
+                const peerTier = getLeague(peer.totalPoints).tier;
+                const active = peer.userId === activePeerId;
+                return (
+                  <button
+                    key={peer.userId}
+                    className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      active
+                        ? LEAGUE_CHIP_ACTIVE_CLASS[peerTier]
+                        : "bg-[var(--surface-soft)] text-[var(--muted-ink)] hover:text-[var(--ink)]"
+                    }`}
+                    type="button"
+                    onClick={() => setActivePeerId(peer.userId)}
+                  >
+                    <LeagueBadge tier={peerTier} size="sm" />
+                    {peer.displayName}
+                  </button>
+                );
+              })}
             </div>
           </Surface>
 
-          {activePeer ? (
+          {activePeer && activeLeague ? (
             <>
-              <Surface className="p-6">
-                <div className="flex items-center gap-3">
-                  <LeagueBadge tier={getLeague(activePeer.totalPoints).tier} size="lg" />
-                  <div>
-                    <h2 className="font-display text-2xl text-[var(--ink)]">
+              <Surface
+                className={`relative isolate overflow-hidden border-2 p-0 ${
+                  LEAGUE_BANNER_CLASS[activeLeague.tier]
+                } ${LEAGUE_FRAME_CLASS[activeLeague.tier]}`}
+              >
+                <div className="absolute inset-y-0 left-0 w-1.5 bg-current opacity-80" />
+                <div className="pointer-events-none absolute -bottom-16 -right-8 select-none font-display text-[10rem] leading-none text-white/[0.035]">
+                  {LEAGUE_ORNAMENT[activeLeague.tier]}
+                </div>
+                <div
+                  className={`absolute right-0 top-0 rounded-bl-2xl px-5 py-2 text-[10px] font-bold uppercase tracking-[0.24em] ${
+                    LEAGUE_RIBBON_CLASS[activeLeague.tier]
+                  }`}
+                >
+                  {activeLeague.label}
+                </div>
+                <LeagueBadge
+                  tier={activeLeague.tier}
+                  className="pointer-events-none absolute -right-8 top-10 h-44 w-44 rotate-12 opacity-[0.09]"
+                />
+
+                <div className="relative grid gap-5 p-6 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:p-8">
+                  <div className="relative grid h-28 w-28 shrink-0 place-items-center rounded-full border border-white/15 bg-black/20 shadow-inner">
+                    <span className="absolute inset-2 rounded-full border border-dashed border-white/20" />
+                    <LeagueBadge tier={activeLeague.tier} size="xl" />
+                  </div>
+
+                  <div className="min-w-0 pt-5 sm:pt-0">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-white/60">
+                      Jugador seleccionado
+                    </p>
+                    <h2 className="font-display mt-2 break-words text-3xl uppercase leading-none text-white sm:text-4xl">
                       {activePeer.displayName}
                     </h2>
-                    <p className="tabular-nums mt-1 text-sm text-[var(--muted-ink)]">
-                      {getLeague(activePeer.totalPoints).label} · {activePeer.totalPoints} pts
+                    <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-white/70">
+                      <span aria-hidden>{LEAGUE_ORNAMENT[activeLeague.tier]}</span>
+                      <span>{activeLeague.label}</span>
+                    </div>
+                  </div>
+
+                  <div className="w-fit rounded-2xl border border-white/15 bg-black/25 px-5 py-3 text-left sm:text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">Puntaje</p>
+                    <p className="tabular-nums font-display mt-1 text-4xl text-white">
+                      {activePeer.totalPoints}
                     </p>
+                    <p className="text-xs font-semibold text-white/55">puntos</p>
                   </div>
                 </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="relative border-t border-white/10 bg-black/15 px-6 py-4 sm:px-8">
+              <div className="flex flex-wrap gap-2">
               {unlockedRounds.map((round) => {
                 const submitted = activePeer.phaseStatus[round] ?? false;
 
@@ -423,6 +518,7 @@ export function PeerBrowser({
                   </div>
                 );
               })}
+              </div>
             </div>
           </Surface>
 

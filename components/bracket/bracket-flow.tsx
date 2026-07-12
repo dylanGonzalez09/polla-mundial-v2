@@ -176,7 +176,7 @@ function MatchNode({ data }: NodeProps<MatchFlowNode>) {
 
   return (
     <div
-      className={`flex cursor-pointer flex-col gap-1 rounded-2xl border bg-[var(--surface)] px-2.5 py-2 shadow-[0_10px_30px_rgba(6,25,15,0.35)] transition ${
+      className={`flex cursor-pointer flex-col gap-1 rounded-2xl border bg-[#101f31] px-2.5 py-2 text-[#f2f5fa] shadow-[0_10px_30px_rgba(6,25,15,0.35)] transition ${
         selected
           ? "border-[var(--gold)] ring-2 ring-[var(--gold)]"
           : "border-white/20 hover:border-[var(--primary)]"
@@ -545,12 +545,12 @@ export function BracketFlow({
         />
         <Controls
           showInteractive={false}
-          className="!rounded-xl !border-none !bg-white/90 !shadow-lg"
+          className="!rounded-xl !border !border-white/10 !bg-[#14263a] !text-white !shadow-lg"
         />
         <MiniMap
           pannable
           zoomable
-          className="!hidden sm:!block !h-28 !w-44 !rounded-xl !bg-white/15"
+          className="!hidden sm:!block !h-28 !w-44 !rounded-xl !border !border-white/10 !bg-[#14263a]"
           maskColor="rgba(10,30,20,0.55)"
           nodeColor={() => "rgba(255,255,255,0.75)"}
           nodeStrokeWidth={0}
@@ -558,31 +558,42 @@ export function BracketFlow({
       </ReactFlow>
 
       {selectedMatch ? (
-        <div className="absolute inset-x-2 bottom-2 z-10 max-h-[78%] overflow-y-auto rounded-[26px] shadow-[0_24px_60px_rgba(6,25,15,0.5)] sm:inset-x-auto sm:bottom-3 sm:right-3 sm:top-3 sm:max-h-none sm:w-[340px]">
-          <div className="flex flex-col gap-2">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Detalle del partido ${selectedMatch.code}`}
+          className="fixed inset-0 z-50 flex items-end bg-black/70 p-2 backdrop-blur-sm sm:absolute sm:items-stretch sm:justify-end sm:bg-black/30 sm:p-3"
+          onClick={() => setSelectedMatchId(null)}
+        >
+          <div
+            className="flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden rounded-[24px] border border-white/15 bg-[#0e1d2e] shadow-[0_24px_70px_rgba(0,0,0,0.65)] sm:h-full sm:max-h-none sm:w-[360px]"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="sticky top-0 z-10 flex justify-end">
               <button
                 type="button"
                 onClick={() => setSelectedMatchId(null)}
-                className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-[var(--ink)] shadow-md transition hover:bg-white"
+                className="m-2 rounded-full bg-[#22344b] px-3 py-1.5 text-xs font-bold text-white shadow-md transition hover:bg-[#2d4460]"
               >
                 Cerrar ✕
               </button>
             </div>
-            <MatchCard
-              match={selectedMatch}
-              pick={picks.get(selectedMatch.id)}
-              readOnly={readOnly}
-              homeTeam={selectedTeams?.homeTeam ?? null}
-              awayTeam={selectedTeams?.awayTeam ?? null}
-              canEditTeams={canEditTeams(selectedMatch)}
-              canEditScores={canEditScores(selectedMatch)}
-              officialResult={officialResults?.get(selectedMatch.id) ?? null}
-              onPickWinner={(teamId) => onPickWinner(selectedMatch.id, teamId)}
-              onChangeScore={(side, value) =>
-                onChangeScore(selectedMatch.id, side, value)
-              }
-            />
+            <div className="min-h-0 overflow-x-hidden overflow-y-auto p-2 pt-0">
+              <MatchCard
+                match={selectedMatch}
+                pick={picks.get(selectedMatch.id)}
+                readOnly={readOnly}
+                homeTeam={selectedTeams?.homeTeam ?? null}
+                awayTeam={selectedTeams?.awayTeam ?? null}
+                canEditTeams={canEditTeams(selectedMatch)}
+                canEditScores={canEditScores(selectedMatch)}
+                officialResult={officialResults?.get(selectedMatch.id) ?? null}
+                onPickWinner={(teamId) => onPickWinner(selectedMatch.id, teamId)}
+                onChangeScore={(side, value) =>
+                  onChangeScore(selectedMatch.id, side, value)
+                }
+              />
+            </div>
           </div>
         </div>
       ) : null}

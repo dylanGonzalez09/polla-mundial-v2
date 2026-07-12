@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 type ButtonProps = PropsWithChildren<
   ButtonHTMLAttributes<HTMLButtonElement> & {
     tone?: "primary" | "secondary" | "ghost" | "danger" | "gold";
+    size?: "sm" | "md";
     block?: boolean;
   }
 >;
@@ -14,28 +15,36 @@ const toneClassName: Record<NonNullable<ButtonProps["tone"]>, string> = {
   primary:
     "bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(0,168,89,0.35),inset_0_1px_0_rgba(255,255,255,0.35)] hover:bg-[var(--primary-strong)]",
   secondary:
-    "bg-white text-[var(--ink)] border border-[var(--line)] hover:border-[var(--primary)]",
+    "bg-[var(--surface-soft)] text-[var(--ink)] border border-[var(--line)] hover:border-[var(--primary)]",
   ghost:
     "bg-transparent text-[var(--muted-ink)] border border-transparent hover:border-[var(--line)]",
   danger:
     "bg-[var(--live)] text-white shadow-[0_12px_24px_rgba(224,16,47,0.3)] hover:bg-[#b80c26]",
   gold:
-    "bg-[var(--gold)] text-[var(--ink)] shadow-[0_12px_24px_rgba(245,179,1,0.4),inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-[var(--gold-strong)]",
+    "bg-[var(--gold)] text-[var(--chip-active)] shadow-[0_12px_24px_rgba(245,179,1,0.4),inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-[var(--gold-strong)]",
+};
+
+const sizeClassName: Record<NonNullable<ButtonProps["size"]>, string> = {
+  md: "h-11 px-5 text-sm",
+  sm: "h-9 px-4 text-xs",
 };
 
 export function Button({
   children,
   className = "",
   tone = "primary",
+  size = "md",
   block = false,
   disabled,
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold transition ${
-        toneClassName[tone]
-      } ${block ? "w-full" : ""} ${disabled ? "cursor-not-allowed opacity-50" : ""} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full font-semibold transition ${
+        sizeClassName[size]
+      } ${toneClassName[tone]} ${block ? "w-full" : ""} ${
+        disabled ? "cursor-not-allowed opacity-50" : ""
+      } ${className}`}
       disabled={disabled}
       {...props}
     >
@@ -48,6 +57,7 @@ export function SubmitButton({
   children,
   className = "",
   tone = "primary",
+  size = "md",
   block = false,
   disabled = false,
 }: Omit<ButtonProps, "type">) {
@@ -57,6 +67,7 @@ export function SubmitButton({
     <Button
       type="submit"
       tone={tone}
+      size={size}
       block={block}
       disabled={pending || disabled}
       className={className}

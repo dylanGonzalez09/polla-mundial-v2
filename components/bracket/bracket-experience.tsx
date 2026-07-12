@@ -228,7 +228,15 @@ export function BracketExperience({
             </p>
           </div>
 
-          <div className="rounded-[24px] bg-[var(--surface-soft)] px-5 py-4 text-sm text-[var(--muted-ink)]">
+          <div
+            className={`rounded-[24px] px-5 py-4 text-sm ${
+              initialSettings.initialEffectiveStatus === "open"
+                ? "bg-[rgba(0,168,89,0.12)] text-[var(--primary)]"
+                : initialSettings.initialEffectiveStatus === "closed"
+                  ? "bg-[var(--surface-soft)] text-[var(--muted-ink)]"
+                  : "bg-[rgba(224,16,47,0.1)] text-[var(--live)]"
+            }`}
+          >
             <strong className="text-[var(--ink)]">Ventana inicial:</strong>{" "}
             {initialSettings.initialEffectiveStatus === "open"
               ? "abierta"
@@ -318,7 +326,9 @@ export function BracketExperience({
                 return (
                   <li
                     key={round}
-                    className="flex items-center justify-between rounded-2xl bg-[var(--surface-soft)] px-4 py-2 text-sm"
+                    className={`flex items-center justify-between rounded-2xl border-l-4 bg-[var(--surface-soft)] px-4 py-2 text-sm ${
+                      done ? "border-[var(--primary)]" : "border-[var(--live)]"
+                    }`}
                   >
                     <span className="font-semibold text-[var(--ink)]">
                       Equipos · {ROUND_LABELS[round]}
@@ -329,7 +339,13 @@ export function BracketExperience({
                   </li>
                 );
               })}
-              <li className="flex items-center justify-between rounded-2xl bg-[var(--surface-soft)] px-4 py-2 text-sm">
+              <li
+                className={`flex items-center justify-between rounded-2xl border-l-4 bg-[var(--surface-soft)] px-4 py-2 text-sm ${
+                  initialMissing.missingRound32Scores.length === 0
+                    ? "border-[var(--primary)]"
+                    : "border-[var(--live)]"
+                }`}
+              >
                 <span className="font-semibold text-[var(--ink)]">
                   Marcadores · 16avos
                 </span>

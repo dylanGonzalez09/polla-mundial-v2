@@ -56,7 +56,7 @@ export function AdminMatchBrowser({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-1.5 overflow-x-auto rounded-2xl bg-[var(--surface-soft)] p-1.5">
+      <div className="flex flex-wrap gap-1.5 overflow-x-auto rounded-2xl bg-[var(--surface-soft)] p-1.5 shadow-[0_10px_28px_rgba(4,10,24,0.3)]">
         {ROUND_ORDER.map((round) => {
           const pending = pendingCountByRound[round] ?? 0;
           const active = round === activeRound;
@@ -67,7 +67,7 @@ export function AdminMatchBrowser({
               onClick={() => setActiveRound(round)}
               className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 active
-                  ? "bg-[var(--ink)] text-white"
+                  ? "bg-[var(--chip-active)] text-white"
                   : "text-[var(--muted-ink)] hover:text-[var(--ink)]"
               }`}
             >
