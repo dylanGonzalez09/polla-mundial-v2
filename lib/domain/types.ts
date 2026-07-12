@@ -57,6 +57,20 @@ export type PredictionPick = {
   points?: number;
 };
 
+export type AdminPredictionCorrectionRow = {
+  userId: string;
+  displayName: string;
+  predictionId: string;
+  isConfirmed: boolean;
+  totalPoints: number;
+  pickId: string;
+  matchId: number;
+  predictedAdvancingTeamId: number | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  points: number;
+};
+
 export type PredictionPhaseSubmission = {
   round: RoundKey;
   submittedAt: string;
