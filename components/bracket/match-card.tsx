@@ -98,7 +98,7 @@ export function MatchCard({
           officialResult,
           advancingCorrect,
           matchupCorrect,
-          match.round === "r32",
+          match.round,
         )
       : null;
 

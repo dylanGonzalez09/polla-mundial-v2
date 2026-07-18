@@ -80,7 +80,7 @@ function matchPoints(data: MatchNodeData) {
     official,
     advancingCorrect,
     matchupCorrect,
-    match.round === "r32",
+    match.round,
   );
 }
 

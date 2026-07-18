@@ -1,3 +1,5 @@
+import type { RoundKey } from "./types";
+
 type ScoreLike = {
   homeScore: number | null;
   awayScore: number | null;
@@ -12,11 +14,17 @@ type ScoreLike = {
  *   - solo ganador = 1
  *   - resto = 0
  *
- * - Octavos en adelante:
+ * - Octavos a semifinal:
  *   - ganador + marcador exacto = 4
  *   - empate exacto + cruce correcto, pero sin acertar quien avanza = 3
  *   - solo marcador exacto = 2
  *   - solo ganador = 1
+ *   - resto = 0
+ *
+ * - Tercer lugar y final (puntaje aditivo: ganador + bono de marcador):
+ *   - ganador: 3 (tercer lugar) / 7 (final)
+ *   - + 3 adicional si acierta el marcador exacto
+ *   - solo marcador exacto = 3
  *   - resto = 0
  */
 export function scoreMatch(
@@ -24,8 +32,10 @@ export function scoreMatch(
   official: ScoreLike,
   advancingCorrect: boolean,
   matchupCorrect: boolean,
-  isRoundOf32: boolean,
+  round: RoundKey,
 ) {
+  const isRoundOf32 = round === "r32";
+
   const scoreExact =
     pick.homeScore !== null &&
     pick.awayScore !== null &&
@@ -38,6 +48,12 @@ export function scoreMatch(
     official.homeScore !== null &&
     official.awayScore !== null &&
     official.homeScore === official.awayScore;
+
+  if (round === "third" || round === "final") {
+    const winnerPoints = advancingCorrect ? (round === "final" ? 7 : 3) : 0;
+    const exactBonus = scoreExact ? 3 : 0;
+    return winnerPoints + exactBonus;
+  }
 
   if (advancingCorrect && scoreExact) {
     return 4;

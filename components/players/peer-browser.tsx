@@ -243,7 +243,7 @@ export function PeerBrowser({
               official,
               advancingCorrect,
               matchupCorrect,
-              selectedMatch.round === "r32",
+              selectedMatch.round,
             )
           : null;
 
